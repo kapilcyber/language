@@ -1,0 +1,693 @@
+{% extends "base.html" %}
+
+{% block title %}HR Interview Tool - Inclusive Learning App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question-card {
+        margin-bottom: 20px;
+        border-left: 4px solid #4e73df;
+    }
+    
+    .accommodation-card {
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+    }
+    
+    .accommodation-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .template-body {
+        max-height: 300px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 0.85rem;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+    
+    .tip-list {
+        padding-left: 20px;
+    }
+    
+    .tip-list li {
+        margin-bottom: 10px;
+    }
+    
+    .job-analysis-results {
+        display: none;
+    }
+    
+    .inclusivity-score {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        margin: 0 auto;
+        font-weight: bold;
+    }
+    
+    .score-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+    
+    .score-value {
+        font-size: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">HR Interview Tool</li>
+        </ol>
+    </nav>
+    
+    <div class="tool-header mb-4">
+        <h1 class="mb-3">HR Interview Preparation</h1>
+        <p class="lead">Tools to help deaf and mute candidates prepare for job interviews and assist HR professionals in creating inclusive interview processes.</p>
+    </div>
+    
+    <ul class="nav nav-tabs mb-4" id="hrTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="interview-questions-tab" data-bs-toggle="tab" data-bs-target="#interview-questions" type="button" role="tab" aria-controls="interview-questions" aria-selected="true">
+                <i class="fas fa-question-circle me-1"></i> Interview Questions
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="interview-tips-tab" data-bs-toggle="tab" data-bs-target="#interview-tips" type="button" role="tab" aria-controls="interview-tips" aria-selected="false">
+                <i class="fas fa-lightbulb me-1"></i> Preparation Tips
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="accommodation-templates-tab" data-bs-toggle="tab" data-bs-target="#accommodation-templates" type="button" role="tab" aria-controls="accommodation-templates" aria-selected="false">
+                <i class="fas fa-file-alt me-1"></i> Accommodation Templates
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="job-description-tab" data-bs-toggle="tab" data-bs-target="#job-description" type="button" role="tab" aria-controls="job-description" aria-selected="false">
+                <i class="fas fa-briefcase me-1"></i> Job Description Analysis
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="hrTabContent">
+        <!-- Interview Questions Tab -->
+        <div class="tab-pane fade show active" id="interview-questions" role="tabpanel" aria-labelledby="interview-questions-tab">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Generate Interview Questions</h5>
+                </div>
+                <div class="card-body">
+                    <form id="question-generator-form" class="mb-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="job-role" class="form-label">Job Role</label>
+                                <input type="text" class="form-control" id="job-role" placeholder="e.g., Software Developer">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="experience-level" class="form-label">Experience Level</label>
+                                <select class="form-select" id="experience-level">
+                                    <option value="entry">Entry Level</option>
+                                    <option value="mid">Mid-Level</option>
+                                    <option value="senior">Senior Level</option>
+                                    <option value="leadership">Leadership</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="skills" class="form-label">Key Skills (comma separated)</label>
+                                <input type="text" class="form-control" id="skills" placeholder="e.g., communication, teamwork">
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary" id="generate-questions-btn">
+                                <i class="fas fa-sync me-1"></i> Generate Questions
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="questions-loader" class="text-center my-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Generating relevant interview questions...</p>
+                    </div>
+                    
+                    <div id="generated-questions" style="display: none;">
+                        <h5>Generated Interview Questions</h5>
+                        <div id="questions-container">
+                            <!-- Questions will be added here -->
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary btn-sm" id="copy-questions-btn">
+                                <i class="fas fa-copy me-1"></i> Copy All Questions
+                            </button>
+                            <button class="btn btn-outline-success btn-sm ms-2" id="save-questions-btn">
+                                <i class="fas fa-save me-1"></i> Save for Later
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Saved Question Sets</h5>
+                </div>
+                <div class="card-body">
+                    <div id="saved-questions-container">
+                        <p class="text-muted">No saved question sets yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interview Tips Tab -->
+        <div class="tab-pane fade" id="interview-tips" role="tabpanel" aria-labelledby="interview-tips-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Interview Preparation Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Before the Interview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="tip-list">
+                                        <li>Research the company and role thoroughly</li>
+                                        <li>Prepare to request accommodations in advance</li>
+                                        <li>Practice common interview questions</li>
+                                        <li>Set up and test technology if using interpreters or assistive devices</li>
+                                        <li>Prepare a method to communicate your needs clearly</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-success text-white">
+                                    <h5 class="mb-0">During the Interview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="tip-list">
+                                        <li>Take your time responding to questions</li>
+                                        <li>Don't hesitate to ask for clarification</li>
+                                        <li>Focus on showcasing your skills and qualifications</li>
+                                        <li>Have prepared examples of your achievements</li>
+                                        <li>Be confident in your communication method</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">After the Interview</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="tip-list">
+                                        <li>Send a thank-you note expressing appreciation</li>
+                                        <li>Reiterate your interest in the position</li>
+                                        <li>Address any points you wish you had covered better</li>
+                                        <li>Inquire about the next steps in the hiring process</li>
+                                        <li>Offer to provide any additional information</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info mt-4">
+                        <i class="fas fa-info-circle me-2"></i> Remember: Your unique perspective and abilities are valuable to employers. Focus on what you can bring to the role.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Accommodation Templates Tab -->
+        <div class="tab-pane fade" id="accommodation-templates" role="tabpanel" aria-labelledby="accommodation-templates-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Accommodation Request Templates</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-4">Use these templates to request necessary accommodations for your interview. Customize them to fit your specific needs.</p>
+                    
+                    <div class="row" id="accommodation-templates-container">
+                        <!-- Templates will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Job Description Analysis Tab -->
+        <div class="tab-pane fade" id="job-description" role="tabpanel" aria-labelledby="job-description-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Job Description Inclusivity Analysis</h5>
+                </div>
+                <div class="card-body">
+                    <form id="job-description-form" class="mb-4">
+                        <div class="mb-3">
+                            <label for="job-description-text" class="form-label">Paste Job Description</label>
+                            <textarea class="form-control" id="job-description-text" rows="6" placeholder="Paste the job description you want to analyze for inclusivity..."></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="analyze-job-btn">
+                                <i class="fas fa-chart-bar me-1"></i> Analyze Inclusivity
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="job-analysis-loader" class="text-center my-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Analyzing job description for inclusivity...</p>
+                    </div>
+                    
+                    <div id="job-analysis-results" class="job-analysis-results">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="inclusivity-score bg-light">
+                                    <span class="score-label">Inclusivity Score</span>
+                                    <span class="score-value" id="inclusivity-score">0.0</span>
+                                    <span>/10</span>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <h5>Analysis Summary</h5>
+                                <div class="card mb-3">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Positive Aspects</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul id="positive-aspects-list">
+                                            <!-- Positive aspects will be added here -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Improvement Suggestions</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <ul id="improvement-suggestions-list">
+                                            <!-- Improvement suggestions will be added here -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Alternative Wording Suggestions</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Original Text</th>
+                                                <th>Suggested Inclusive Alternative</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="wording-suggestions-table">
+                                            <!-- Wording suggestions will be added here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Interview Questions Generator
+        const questionGeneratorForm = document.getElementById('question-generator-form');
+        const jobRole = document.getElementById('job-role');
+        const experienceLevel = document.getElementById('experience-level');
+        const skills = document.getElementById('skills');
+        const generateQuestionsBtn = document.getElementById('generate-questions-btn');
+        const questionsLoader = document.getElementById('questions-loader');
+        const generatedQuestions = document.getElementById('generated-questions');
+        const questionsContainer = document.getElementById('questions-container');
+        const copyQuestionsBtn = document.getElementById('copy-questions-btn');
+        const saveQuestionsBtn = document.getElementById('save-questions-btn');
+        
+        // Accommodation Templates
+        const accommodationTemplatesContainer = document.getElementById('accommodation-templates-container');
+        
+        // Job Description Analysis
+        const jobDescriptionForm = document.getElementById('job-description-form');
+        const jobDescriptionText = document.getElementById('job-description-text');
+        const analyzeJobBtn = document.getElementById('analyze-job-btn');
+        const jobAnalysisLoader = document.getElementById('job-analysis-loader');
+        const jobAnalysisResults = document.getElementById('job-analysis-results');
+        const inclusivityScore = document.getElementById('inclusivity-score');
+        const positiveAspectsList = document.getElementById('positive-aspects-list');
+        const improvementSuggestionsList = document.getElementById('improvement-suggestions-list');
+        const wordingSuggestionsTable = document.getElementById('wording-suggestions-table');
+        
+        // Generate interview questions
+        questionGeneratorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get input values
+            const roleValue = jobRole.value.trim();
+            const levelValue = experienceLevel.value;
+            const skillsValue = skills.value.trim().split(',').map(skill => skill.trim()).filter(skill => skill.length > 0);
+            
+            if (!roleValue) {
+                alert('Please enter a job role');
+                return;
+            }
+            
+            // Show loader, hide results
+            questionsLoader.style.display = 'block';
+            generatedQuestions.style.display = 'none';
+            
+            // Send API request
+            fetch('/api/interview-questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    role: roleValue,
+                    experience_level: levelValue,
+                    skills: skillsValue.length > 0 ? skillsValue : ["communication", "teamwork", "problem-solving"]
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to generate questions');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loader, show results
+                questionsLoader.style.display = 'none';
+                generatedQuestions.style.display = 'block';
+                
+                // Clear previous questions
+                questionsContainer.innerHTML = '';
+                
+                // Add questions to container
+                if (data && data.length > 0) {
+                    data.forEach((question, index) => {
+                        const questionCard = document.createElement('div');
+                        questionCard.className = 'card question-card';
+                        questionCard.innerHTML = `
+                            <div class="card-body">
+                                <h6 class="card-title">Question ${index + 1}</h6>
+                                <p class="card-text">${question}</p>
+                            </div>
+                        `;
+                        questionsContainer.appendChild(questionCard);
+                    });
+                } else {
+                    questionsContainer.innerHTML = '<p class="text-muted">No questions generated. Please try different parameters.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error generating questions:', error);
+                questionsLoader.style.display = 'none';
+                alert('Failed to generate questions. Please try again later.');
+            });
+        });
+        
+        // Copy all questions
+        copyQuestionsBtn.addEventListener('click', function() {
+            const questionCards = questionsContainer.querySelectorAll('.question-card');
+            let questionsText = '';
+            
+            questionCards.forEach((card, index) => {
+                const questionText = card.querySelector('.card-text').textContent;
+                questionsText += `Question ${index + 1}: ${questionText}\n\n`;
+            });
+            
+            if (questionsText) {
+                navigator.clipboard.writeText(questionsText)
+                    .then(() => {
+                        alert('Questions copied to clipboard!');
+                    })
+                    .catch(error => {
+                        console.error('Failed to copy questions:', error);
+                        alert('Failed to copy questions. Please try again.');
+                    });
+            }
+        });
+        
+        // Save questions for later
+        saveQuestionsBtn.addEventListener('click', function() {
+            const questionCards = questionsContainer.querySelectorAll('.question-card');
+            if (questionCards.length === 0) return;
+            
+            const questions = [];
+            questionCards.forEach(card => {
+                questions.push(card.querySelector('.card-text').textContent);
+            });
+            
+            const savedQuestions = JSON.parse(localStorage.getItem('savedQuestions') || '[]');
+            savedQuestions.push({
+                id: Date.now(),
+                role: jobRole.value.trim(),
+                experience: experienceLevel.options[experienceLevel.selectedIndex].text,
+                questions: questions,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem('savedQuestions', JSON.stringify(savedQuestions));
+            alert('Questions saved successfully!');
+            loadSavedQuestions();
+        });
+        
+        // Load saved questions from localStorage
+        function loadSavedQuestions() {
+            const savedQuestionsContainer = document.getElementById('saved-questions-container');
+            const savedQuestions = JSON.parse(localStorage.getItem('savedQuestions') || '[]');
+            
+            if (savedQuestions.length === 0) {
+                savedQuestionsContainer.innerHTML = '<p class="text-muted">No saved question sets yet.</p>';
+                return;
+            }
+            
+            savedQuestionsContainer.innerHTML = '';
+            savedQuestions.forEach(set => {
+                const date = new Date(set.date).toLocaleDateString();
+                const card = document.createElement('div');
+                card.className = 'card mb-3';
+                card.innerHTML = `
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">${set.role} (${set.experience})</h6>
+                        <span class="text-muted small">Saved on ${date}</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">${set.questions.length} questions</p>
+                        <button class="btn btn-sm btn-outline-primary view-saved-questions" data-id="${set.id}">
+                            <i class="fas fa-eye me-1"></i> View
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger ms-2 delete-saved-questions" data-id="${set.id}">
+                            <i class="fas fa-trash me-1"></i> Delete
+                        </button>
+                    </div>
+                `;
+                savedQuestionsContainer.appendChild(card);
+            });
+            
+            // Add event listeners for view/delete buttons
+            document.querySelectorAll('.view-saved-questions').forEach(button => {
+                button.addEventListener('click', function() {
+                    const setId = parseInt(this.getAttribute('data-id'));
+                    const savedQuestions = JSON.parse(localStorage.getItem('savedQuestions') || '[]');
+                    const questionSet = savedQuestions.find(set => set.id === setId);
+                    
+                    if (questionSet) {
+                        let message = `Questions for ${questionSet.role} (${questionSet.experience}):\n\n`;
+                        questionSet.questions.forEach((question, index) => {
+                            message += `${index + 1}. ${question}\n\n`;
+                        });
+                        
+                        // Show modal or alert with the questions
+                        alert(message);
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.delete-saved-questions').forEach(button => {
+                button.addEventListener('click', function() {
+                    const setId = parseInt(this.getAttribute('data-id'));
+                    const savedQuestions = JSON.parse(localStorage.getItem('savedQuestions') || '[]');
+                    const newSavedQuestions = savedQuestions.filter(set => set.id !== setId);
+                    
+                    localStorage.setItem('savedQuestions', JSON.stringify(newSavedQuestions));
+                    loadSavedQuestions();
+                });
+            });
+        }
+        
+        // Load accommodation templates
+        function loadAccommodationTemplates() {
+            fetch('/api/accommodation-templates')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load templates');
+                    }
+                    return response.json();
+                })
+                .then(templates => {
+                    accommodationTemplatesContainer.innerHTML = '';
+                    
+                    templates.forEach(template => {
+                        const card = document.createElement('div');
+                        card.className = 'col-md-4 mb-4';
+                        card.innerHTML = `
+                            <div class="card h-100 accommodation-card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">${template.title}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="template-body">${template.template}</div>
+                                    <div class="mt-3 text-center">
+                                        <button class="btn btn-sm btn-outline-primary copy-template-btn" data-template="${encodeURIComponent(template.template)}">
+                                            <i class="fas fa-copy me-1"></i> Copy Template
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        accommodationTemplatesContainer.appendChild(card);
+                    });
+                    
+                    // Add event listeners for copy buttons
+                    document.querySelectorAll('.copy-template-btn').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const templateText = decodeURIComponent(this.getAttribute('data-template'));
+                            navigator.clipboard.writeText(templateText)
+                                .then(() => {
+                                    alert('Template copied to clipboard!');
+                                })
+                                .catch(error => {
+                                    console.error('Failed to copy template:', error);
+                                    alert('Failed to copy template. Please try again.');
+                                });
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading templates:', error);
+                    accommodationTemplatesContainer.innerHTML = '<div class="col-12"><p class="text-danger">Failed to load templates. Please refresh the page to try again.</p></div>';
+                });
+        }
+        
+        // Analyze job description
+        jobDescriptionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const description = jobDescriptionText.value.trim();
+            if (!description) {
+                alert('Please enter a job description to analyze');
+                return;
+            }
+            
+            // Show loader, hide results
+            jobAnalysisLoader.style.display = 'block';
+            jobAnalysisResults.style.display = 'none';
+            
+            // Send API request
+            fetch('/api/analyze-job-description', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: description
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to analyze job description');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loader, show results
+                jobAnalysisLoader.style.display = 'none';
+                jobAnalysisResults.style.display = 'block';
+                
+                // Update inclusivity score
+                inclusivityScore.textContent = data.inclusivity_score.toFixed(1);
+                
+                // Update score color based on value
+                const scoreElement = inclusivityScore.parentElement;
+                if (data.inclusivity_score < 5) {
+                    scoreElement.className = 'inclusivity-score bg-danger text-white';
+                } else if (data.inclusivity_score < 7.5) {
+                    scoreElement.className = 'inclusivity-score bg-warning';
+                } else {
+                    scoreElement.className = 'inclusivity-score bg-success text-white';
+                }
+                
+                // Update positive aspects
+                positiveAspectsList.innerHTML = '';
+                data.positive_aspects.forEach(aspect => {
+                    const li = document.createElement('li');
+                    li.textContent = aspect;
+                    positiveAspectsList.appendChild(li);
+                });
+                
+                // Update improvement suggestions
+                improvementSuggestionsList.innerHTML = '';
+                data.improvement_suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    improvementSuggestionsList.appendChild(li);
+                });
+                
+                // Update wording suggestions
+                wordingSuggestionsTable.innerHTML = '';
+                Object.entries(data.alternative_wording).forEach(([original, alternative]) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${original}</td>
+                        <td>${alternative}</td>
+                    `;
+                    wordingSuggestionsTable.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error analyzing job description:', error);
+                jobAnalysisLoader.style.display = 'none';
+                alert('Failed to analyze job description. Please try again later.');
+            });
+        });
+        
+        // Load saved questions and accommodation templates on page load
+        loadSavedQuestions();
+        loadAccommodationTemplates();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign to Text Tool{% endblock %}
+
+{% block styles %}
+<style>
+    .camera-container {
+        position: relative;
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    #video-preview {
+        width: 100%;
+        border-radius: 8px;
+        background-color: #f0f0f0;
+    }
+    
+    .capture-btn {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+    
+    .camera-controls {
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    #captured-image {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 15px;
+        display: none;
+    }
+    
+    #camera-error {
+        display: none;
+        margin-top: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-3">Sign to Text Conversion</h1>
+            <p class="text-muted">
+                Use your camera to capture sign language gestures and convert them to text.
+            </p>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> Position your hands clearly in the frame and make sign language gestures to convert them to text.
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-7">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Camera Input</h5>
+                </div>
+                <div class="card-body">
+                    <div class="camera-container">
+                        <video id="video-preview" autoplay playsinline></video>
+                        <button id="capture-btn" class="btn btn-danger rounded-circle capture-btn" disabled>
+                            <i class="fas fa-camera"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="camera-controls">
+                        <button id="start-camera-btn" class="btn btn-primary">
+                            <i class="fas fa-video"></i> Start Camera
+                        </button>
+                        <button id="switch-camera-btn" class="btn btn-secondary" disabled>
+                            <i class="fas fa-sync"></i> Switch Camera
+                        </button>
+                    </div>
+                    
+                    <div id="camera-error" class="alert alert-danger"></div>
+                    
+                    <img id="captured-image" class="img-fluid" alt="Captured sign language gesture">
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Recognition Result</h5>
+                </div>
+                <div class="card-body">
+                    <div id="recognition-result">
+                        <p class="text-muted text-center">Capture a sign gesture to see the recognition result here.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Learning Resources</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Capture a sign gesture to see related learning resources.</p>
+                    <div id="learning-resources"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">How to Use This Tool</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-video fa-3x text-primary"></i>
+                            </div>
+                            <h6 class="text-center">1. Position Yourself</h6>
+                            <p class="text-muted small text-center">
+                                Position yourself clearly in front of the camera with good lighting.
+                            </p>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-hand-paper fa-3x text-primary"></i>
+                            </div>
+                            <h6 class="text-center">2. Make a Gesture</h6>
+                            <p class="text-muted small text-center">
+                                Make a clear sign language gesture and hold it steady.
+                            </p>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <div class="text-center mb-3">
+                                <i class="fas fa-camera fa-3x text-primary"></i>
+                            </div>
+                            <h6 class="text-center">3. Capture Image</h6>
+                            <p class="text-muted small text-center">
+                                Click the capture button to analyze your sign language gesture.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+{% endblock %}

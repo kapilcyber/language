@@ -1,0 +1,968 @@
+{% extends "base.html" %}
+
+{% block title %}Real-time Translation - Inclusive Learning App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .translation-container {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    #video-container {
+        position: relative;
+        max-width: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    #video-preview {
+        width: 100%;
+        background-color: #f0f0f0;
+        border-radius: 8px;
+    }
+    
+    .translation-panel {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        height: 100%;
+    }
+    
+    .translation-result {
+        min-height: 120px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #fff;
+    }
+    
+    .translation-settings {
+        margin-bottom: 20px;
+    }
+    
+    .controls {
+        margin-top: 20px;
+    }
+    
+    .record-btn {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    .record-btn .fa-microphone {
+        font-size: 1.5rem;
+    }
+    
+    .record-btn.recording {
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+    
+    .loader {
+        display: none;
+        text-align: center;
+        margin: 20px auto;
+    }
+    
+    .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .sign-visualization {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 15px;
+    }
+    
+    .sign-item {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 10px;
+        flex: 1 0 calc(33.333% - 15px);
+        max-width: calc(33.333% - 15px);
+        background-color: #fff;
+        text-align: center;
+    }
+    
+    .sign-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        margin-bottom: 10px;
+    }
+    
+    .translation-history {
+        margin-top: 30px;
+    }
+    
+    .error-message {
+        display: none;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active">Real-time Translation</li>
+        </ol>
+    </nav>
+    
+    <div class="tool-header mb-4">
+        <h1 class="mb-3">Real-time Translation</h1>
+        <p class="lead">Translate between speech, text, and sign language in real-time for effective communication.</p>
+    </div>
+    
+    <ul class="nav nav-tabs mb-4" id="translationTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="speech-to-sign-tab" data-bs-toggle="tab" data-bs-target="#speech-to-sign" type="button" role="tab" aria-controls="speech-to-sign" aria-selected="true">
+                <i class="fas fa-microphone me-1"></i> Speech to Sign
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="text-to-sign-tab" data-bs-toggle="tab" data-bs-target="#text-to-sign" type="button" role="tab" aria-controls="text-to-sign" aria-selected="false">
+                <i class="fas fa-keyboard me-1"></i> Text to Sign
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="sign-to-text-tab" data-bs-toggle="tab" data-bs-target="#sign-to-text" type="button" role="tab" aria-controls="sign-to-text" aria-selected="false">
+                <i class="fas fa-camera me-1"></i> Sign to Text
+            </button>
+        </li>
+    </ul>
+    
+    <div class="tab-content" id="translationTabContent">
+        <!-- Speech to Sign Tab -->
+        <div class="tab-pane fade show active" id="speech-to-sign" role="tabpanel" aria-labelledby="speech-to-sign-tab">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Speech Input</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="translation-settings">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="speech-input-language" class="form-label">Input Language</label>
+                                        <select class="form-select" id="speech-input-language">
+                                            <option value="en" selected>English</option>
+                                            <option value="gu">Gujarati</option>
+                                            <option value="hi">Hindi</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="speech-output-language" class="form-label">Output Sign Language</label>
+                                        <select class="form-select" id="speech-output-language">
+                                            <option value="en" selected>English (ASL)</option>
+                                            <option value="gu">Gujarati (GSL)</option>
+                                            <option value="hi">Hindi (ISL)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mb-3">
+                                <button id="speech-record-btn" class="record-btn btn btn-outline-danger">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                                <p class="mt-2" id="speech-record-status">Click to start recording</p>
+                            </div>
+                            
+                            <div id="speech-transcription" class="translation-result">
+                                <p class="text-muted text-center">Your speech will appear here...</p>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button id="speech-translate-btn" class="btn btn-primary" disabled>
+                                    <i class="fas fa-language me-1"></i> Translate to Sign Language
+                                </button>
+                            </div>
+                            
+                            <div id="speech-error-message" class="error-message alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i> 
+                                <span id="speech-error-text">Error message will appear here</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Sign Language Translation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="speech-loader" class="loader">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Translating...</span>
+                                </div>
+                                <p class="mt-2">Translating to sign language...</p>
+                            </div>
+                            
+                            <div id="speech-sign-result" class="translation-panel">
+                                <h6>Sign Language Translation:</h6>
+                                <div id="speech-sign-visualization" class="sign-visualization">
+                                    <p class="text-muted text-center">Translated signs will appear here...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Text to Sign Tab -->
+        <div class="tab-pane fade" id="text-to-sign" role="tabpanel" aria-labelledby="text-to-sign-tab">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Text Input</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="translation-settings">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="text-input-language" class="form-label">Input Language</label>
+                                        <select class="form-select" id="text-input-language">
+                                            <option value="en" selected>English</option>
+                                            <option value="gu">Gujarati</option>
+                                            <option value="hi">Hindi</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="text-output-language" class="form-label">Output Sign Language</label>
+                                        <select class="form-select" id="text-output-language">
+                                            <option value="en" selected>English (ASL)</option>
+                                            <option value="gu">Gujarati (GSL)</option>
+                                            <option value="hi">Hindi (ISL)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="text-input" class="form-label">Enter Text</label>
+                                <textarea class="form-control" id="text-input" rows="5" placeholder="Type text to translate to sign language..."></textarea>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button id="text-translate-btn" class="btn btn-primary">
+                                    <i class="fas fa-language me-1"></i> Translate to Sign Language
+                                </button>
+                            </div>
+                            
+                            <div id="text-error-message" class="error-message alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i> 
+                                <span id="text-error-text">Error message will appear here</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-7">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Sign Language Translation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="text-loader" class="loader">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Translating...</span>
+                                </div>
+                                <p class="mt-2">Translating to sign language...</p>
+                            </div>
+                            
+                            <div id="text-sign-result" class="translation-panel">
+                                <h6>Sign Language Translation:</h6>
+                                <div id="text-sign-visualization" class="sign-visualization">
+                                    <p class="text-muted text-center">Translated signs will appear here...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sign to Text Tab -->
+        <div class="tab-pane fade" id="sign-to-text" role="tabpanel" aria-labelledby="sign-to-text-tab">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Camera Input</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="translation-settings">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label for="sign-input-language" class="form-label">Input Sign Language</label>
+                                        <select class="form-select" id="sign-input-language">
+                                            <option value="en" selected>English (ASL)</option>
+                                            <option value="gu">Gujarati (GSL)</option>
+                                            <option value="hi">Hindi (ISL)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="sign-output-language" class="form-label">Output Language</label>
+                                        <select class="form-select" id="sign-output-language">
+                                            <option value="en" selected>English</option>
+                                            <option value="gu">Gujarati</option>
+                                            <option value="hi">Hindi</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="sign-video-container" class="translation-container">
+                                <video id="sign-video-preview" autoplay playsinline></video>
+                            </div>
+                            
+                            <div class="controls text-center mt-3">
+                                <button id="sign-start-camera-btn" class="btn btn-primary">
+                                    <i class="fas fa-video me-1"></i> Start Camera
+                                </button>
+                                <button id="sign-capture-btn" class="btn btn-danger ms-2" disabled>
+                                    <i class="fas fa-camera me-1"></i> Capture Sign
+                                </button>
+                                <button id="sign-switch-camera-btn" class="btn btn-secondary ms-2" disabled>
+                                    <i class="fas fa-sync me-1"></i> Switch Camera
+                                </button>
+                            </div>
+                            
+                            <div id="sign-error-message" class="error-message alert alert-danger">
+                                <i class="fas fa-exclamation-triangle me-2"></i> 
+                                <span id="sign-error-text">Error message will appear here</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Text Translation</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="sign-loader" class="loader">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Recognizing...</span>
+                                </div>
+                                <p class="mt-2">Recognizing sign language...</p>
+                            </div>
+                            
+                            <div id="sign-capture-preview" class="text-center mb-3" style="display: none;">
+                                <p>Captured Image:</p>
+                                <img id="sign-captured-image" class="img-fluid rounded" src="" alt="Captured sign">
+                            </div>
+                            
+                            <div id="sign-text-result" class="translation-result">
+                                <h6>Recognized Text:</h6>
+                                <p id="sign-text-content" class="mb-0 p-2">Recognition results will appear here...</p>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <h6>Confidence Score:</h6>
+                                <div class="progress">
+                                    <div id="sign-confidence-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <button id="sign-copy-btn" class="btn btn-sm btn-outline-primary me-2">
+                                    <i class="fas fa-copy me-1"></i> Copy Text
+                                </button>
+                                <button id="sign-speak-btn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-volume-up me-1"></i> Speak Text
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card translation-history">
+        <div class="card-header">
+            <h5 class="mb-0">Your Translation History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Source Type</th>
+                            <th>Target Type</th>
+                            <th>Content</th>
+                        </tr>
+                    </thead>
+                    <tbody id="translation-history">
+                        <!-- Translation history will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Speech to Sign
+        const speechRecordBtn = document.getElementById('speech-record-btn');
+        const speechRecordStatus = document.getElementById('speech-record-status');
+        const speechTranscription = document.getElementById('speech-transcription');
+        const speechTranslateBtn = document.getElementById('speech-translate-btn');
+        const speechLoader = document.getElementById('speech-loader');
+        const speechSignVisualization = document.getElementById('speech-sign-visualization');
+        const speechErrorMessage = document.getElementById('speech-error-message');
+        const speechErrorText = document.getElementById('speech-error-text');
+        
+        // Text to Sign
+        const textInput = document.getElementById('text-input');
+        const textTranslateBtn = document.getElementById('text-translate-btn');
+        const textLoader = document.getElementById('text-loader');
+        const textSignVisualization = document.getElementById('text-sign-visualization');
+        const textErrorMessage = document.getElementById('text-error-message');
+        const textErrorText = document.getElementById('text-error-text');
+        
+        // Sign to Text
+        const signVideoPreview = document.getElementById('sign-video-preview');
+        const signStartCameraBtn = document.getElementById('sign-start-camera-btn');
+        const signCaptureBtn = document.getElementById('sign-capture-btn');
+        const signSwitchCameraBtn = document.getElementById('sign-switch-camera-btn');
+        const signLoader = document.getElementById('sign-loader');
+        const signCapturePreview = document.getElementById('sign-capture-preview');
+        const signCapturedImage = document.getElementById('sign-captured-image');
+        const signTextContent = document.getElementById('sign-text-content');
+        const signConfidenceBar = document.getElementById('sign-confidence-bar');
+        const signCopyBtn = document.getElementById('sign-copy-btn');
+        const signSpeakBtn = document.getElementById('sign-speak-btn');
+        const signErrorMessage = document.getElementById('sign-error-message');
+        const signErrorText = document.getElementById('sign-error-text');
+        
+        // Translation History
+        const translationHistory = document.getElementById('translation-history');
+        
+        // Variables
+        let isRecording = false;
+        let recognition = null;
+        let signStream = null;
+        let signFacingMode = 'user'; // Start with front camera
+        
+        // Initialize speech recognition
+        function initSpeechRecognition() {
+            // Check if browser supports speech recognition
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                // Set recognition settings
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                
+                // Set language from select
+                const speechInputLanguage = document.getElementById('speech-input-language');
+                recognition.lang = getFullLanguageCode(speechInputLanguage.value);
+                
+                // Listen for language change
+                speechInputLanguage.addEventListener('change', () => {
+                    recognition.lang = getFullLanguageCode(speechInputLanguage.value);
+                });
+                
+                // Handle recognition results
+                recognition.onresult = (event) => {
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    // Display transcription
+                    if (finalTranscript) {
+                        speechTranscription.innerHTML = `<p>${finalTranscript}</p>`;
+                        speechTranslateBtn.disabled = false;
+                    } else if (interimTranscript) {
+                        speechTranscription.innerHTML = `<p class="text-muted">${interimTranscript}</p>`;
+                    }
+                };
+                
+                // Handle errors
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    stopRecording();
+                    showSpeechError(`Speech recognition error: ${event.error}`);
+                };
+                
+                // Handle end of recognition
+                recognition.onend = () => {
+                    if (isRecording) {
+                        // If recording was stopped unexpectedly but flag is still true, restart
+                        recognition.start();
+                    } else {
+                        stopRecording();
+                    }
+                };
+                
+                return true;
+            } else {
+                showSpeechError('Speech recognition not supported in this browser. Please try Chrome or Edge.');
+                return false;
+            }
+        }
+        
+        // Convert language code to full language code for speech recognition
+        function getFullLanguageCode(code) {
+            switch (code) {
+                case 'en': return 'en-US';
+                case 'gu': return 'gu-IN';
+                case 'hi': return 'hi-IN';
+                default: return 'en-US';
+            }
+        }
+        
+        // Start recording
+        function startRecording() {
+            if (!recognition) {
+                if (!initSpeechRecognition()) {
+                    return;
+                }
+            }
+            
+            isRecording = true;
+            speechRecordBtn.classList.add('recording', 'btn-danger');
+            speechRecordBtn.classList.remove('btn-outline-danger');
+            speechRecordStatus.textContent = 'Recording... Click to stop';
+            
+            recognition.start();
+        }
+        
+        // Stop recording
+        function stopRecording() {
+            isRecording = false;
+            speechRecordBtn.classList.remove('recording', 'btn-danger');
+            speechRecordBtn.classList.add('btn-outline-danger');
+            speechRecordStatus.textContent = 'Click to start recording';
+            
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+        
+        // Toggle recording
+        speechRecordBtn.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                // Clear previous transcription
+                speechTranscription.innerHTML = '<p class="text-muted text-center">Listening...</p>';
+                speechTranslateBtn.disabled = true;
+                
+                // Hide error message
+                speechErrorMessage.style.display = 'none';
+                
+                startRecording();
+            }
+        });
+        
+        // Translate speech to sign language
+        speechTranslateBtn.addEventListener('click', () => {
+            const text = speechTranscription.textContent.trim();
+            if (!text) return;
+            
+            // Show loader, hide previous results
+            speechLoader.style.display = 'block';
+            speechSignVisualization.innerHTML = '';
+            
+            // Get selected languages
+            const inputLang = document.getElementById('speech-input-language').value;
+            const outputLang = document.getElementById('speech-output-language').value;
+            
+            // Send API request
+            fetch('/api/speech-to-sign', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    source_language: inputLang,
+                    target_language: outputLang
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to translate speech to sign');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loader
+                speechLoader.style.display = 'none';
+                
+                // Display sign language visualization
+                if (data && data.length > 0) {
+                    let visualizationHtml = '';
+                    
+                    data.forEach(sign => {
+                        visualizationHtml += `
+                            <div class="sign-item">
+                                <img src="/static/images/signs/${outputLang}/${encodeURIComponent(sign.toLowerCase())}.svg" 
+                                     alt="${sign}" onerror="this.src='/static/images/signs/placeholder.svg'">
+                                <p>${sign}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    speechSignVisualization.innerHTML = visualizationHtml;
+                } else {
+                    speechSignVisualization.innerHTML = '<p class="text-muted text-center">No sign language translation available for this text.</p>';
+                }
+                
+                // Update translation history
+                updateTranslationHistory();
+            })
+            .catch(error => {
+                console.error('Error translating speech to sign:', error);
+                speechLoader.style.display = 'none';
+                showSpeechError(error.message);
+            });
+        });
+        
+        // Translate text to sign language
+        textTranslateBtn.addEventListener('click', () => {
+            const text = textInput.value.trim();
+            if (!text) {
+                showTextError('Please enter text to translate');
+                return;
+            }
+            
+            // Show loader, hide previous results
+            textLoader.style.display = 'block';
+            textSignVisualization.innerHTML = '';
+            
+            // Hide error message
+            textErrorMessage.style.display = 'none';
+            
+            // Get selected languages
+            const inputLang = document.getElementById('text-input-language').value;
+            const outputLang = document.getElementById('text-output-language').value;
+            
+            // Send API request
+            fetch('/api/text-to-sign', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    text: text,
+                    source_language: inputLang,
+                    target_language: outputLang
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to translate text to sign');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loader
+                textLoader.style.display = 'none';
+                
+                // Display sign language visualization
+                if (data && data.length > 0) {
+                    let visualizationHtml = '';
+                    
+                    data.forEach(sign => {
+                        visualizationHtml += `
+                            <div class="sign-item">
+                                <img src="/static/images/signs/${outputLang}/${encodeURIComponent(sign.toLowerCase())}.svg" 
+                                     alt="${sign}" onerror="this.src='/static/images/signs/placeholder.svg'">
+                                <p>${sign}</p>
+                            </div>
+                        `;
+                    });
+                    
+                    textSignVisualization.innerHTML = visualizationHtml;
+                } else {
+                    textSignVisualization.innerHTML = '<p class="text-muted text-center">No sign language translation available for this text.</p>';
+                }
+                
+                // Update translation history
+                updateTranslationHistory();
+            })
+            .catch(error => {
+                console.error('Error translating text to sign:', error);
+                textLoader.style.display = 'none';
+                showTextError(error.message);
+            });
+        });
+        
+        // Start camera for sign to text
+        signStartCameraBtn.addEventListener('click', async () => {
+            try {
+                await startSignCamera();
+                signStartCameraBtn.disabled = true;
+                signCaptureBtn.disabled = false;
+                signSwitchCameraBtn.disabled = false;
+            } catch (error) {
+                console.error('Error starting camera:', error);
+                showSignError(`Could not access camera: ${error.message}`);
+            }
+        });
+        
+        // Switch between front and back cameras
+        signSwitchCameraBtn.addEventListener('click', async () => {
+            if (signStream) {
+                stopSignCamera();
+                signFacingMode = signFacingMode === 'user' ? 'environment' : 'user';
+                try {
+                    await startSignCamera();
+                } catch (error) {
+                    console.error('Error switching camera:', error);
+                    showSignError(`Error switching camera: ${error.message}`);
+                }
+            }
+        });
+        
+        // Capture sign language image
+        signCaptureBtn.addEventListener('click', () => {
+            if (signStream) {
+                const canvas = document.createElement('canvas');
+                canvas.width = signVideoPreview.videoWidth;
+                canvas.height = signVideoPreview.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(signVideoPreview, 0, 0, canvas.width, canvas.height);
+                
+                // Convert to base64 data URL
+                const imageDataUrl = canvas.toDataURL('image/jpeg');
+                signCapturedImage.src = imageDataUrl;
+                signCapturePreview.style.display = 'block';
+                
+                // Show loader
+                signLoader.style.display = 'block';
+                
+                // Send image to backend for processing
+                recognizeSignLanguage(imageDataUrl);
+            }
+        });
+        
+        // Copy recognized text to clipboard
+        signCopyBtn.addEventListener('click', () => {
+            const text = signTextContent.textContent;
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    alert('Text copied to clipboard!');
+                })
+                .catch((error) => {
+                    showSignError(`Failed to copy text: ${error.message}`);
+                });
+        });
+        
+        // Speak recognized text using speech synthesis
+        signSpeakBtn.addEventListener('click', () => {
+            const text = signTextContent.textContent;
+            if (text && window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set language from output language select
+                const outputLang = document.getElementById('sign-output-language').value;
+                utterance.lang = getFullLanguageCode(outputLang);
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        });
+        
+        // Start camera with specified facing mode
+        async function startSignCamera() {
+            try {
+                signStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: signFacingMode },
+                    audio: false
+                });
+                signVideoPreview.srcObject = signStream;
+                signErrorMessage.style.display = 'none';
+            } catch (error) {
+                console.error('Error starting camera:', error);
+                showSignError('Could not access camera. Please ensure you have granted camera permissions.');
+                throw error;
+            }
+        }
+        
+        // Stop camera stream
+        function stopSignCamera() {
+            if (signStream) {
+                signStream.getTracks().forEach(track => track.stop());
+                signStream = null;
+                signVideoPreview.srcObject = null;
+            }
+        }
+        
+        // Recognize sign language from image
+        function recognizeSignLanguage(imageDataUrl) {
+            // Remove the data URL prefix
+            const base64Image = imageDataUrl.split(',')[1];
+            
+            // Get input language
+            const inputLang = document.getElementById('sign-input-language').value;
+            const outputLang = document.getElementById('sign-output-language').value;
+            
+            fetch('/api/sign-to-text', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    image: base64Image,
+                    source_language: inputLang,
+                    target_language: outputLang
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error processing image');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Hide loader
+                signLoader.style.display = 'none';
+                
+                // Display recognition results
+                if (data.error) {
+                    showSignError(data.error);
+                } else {
+                    signTextContent.textContent = data.text || 'No text recognized';
+                    
+                    // Update confidence score
+                    const confidencePercent = Math.round((data.confidence || 0) * 100);
+                    signConfidenceBar.style.width = `${confidencePercent}%`;
+                    signConfidenceBar.textContent = `${confidencePercent}%`;
+                    signConfidenceBar.setAttribute('aria-valuenow', confidencePercent);
+                    
+                    // Set color based on confidence
+                    if (confidencePercent < 50) {
+                        signConfidenceBar.className = 'progress-bar bg-danger';
+                    } else if (confidencePercent < 75) {
+                        signConfidenceBar.className = 'progress-bar bg-warning';
+                    } else {
+                        signConfidenceBar.className = 'progress-bar bg-success';
+                    }
+                    
+                    // Update translation history
+                    updateTranslationHistory();
+                }
+            })
+            .catch(error => {
+                console.error('Error recognizing sign language:', error);
+                signLoader.style.display = 'none';
+                showSignError(error.message);
+            });
+        }
+        
+        // Show speech error message
+        function showSpeechError(message) {
+            speechErrorText.textContent = message;
+            speechErrorMessage.style.display = 'block';
+        }
+        
+        // Show text error message
+        function showTextError(message) {
+            textErrorText.textContent = message;
+            textErrorMessage.style.display = 'block';
+        }
+        
+        // Show sign error message
+        function showSignError(message) {
+            signErrorText.textContent = message;
+            signErrorMessage.style.display = 'block';
+        }
+        
+        // Update translation history
+        function updateTranslationHistory() {
+            fetch('/api/translation-history')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to load history');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    let historyHtml = '';
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(item => {
+                            const date = new Date(item.timestamp).toLocaleString();
+                            
+                            historyHtml += `
+                            <tr>
+                                <td>${date}</td>
+                                <td>${item.source_type}</td>
+                                <td>${item.target_type}</td>
+                                <td>${item.source_content}</td>
+                            </tr>
+                            `;
+                        });
+                    } else {
+                        historyHtml = `
+                        <tr>
+                            <td colspan="4" class="text-center">No translation history available</td>
+                        </tr>
+                        `;
+                    }
+                    
+                    translationHistory.innerHTML = historyHtml;
+                })
+                .catch(error => {
+                    console.error('Error loading history:', error);
+                    translationHistory.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center">Failed to load translation history</td>
+                    </tr>
+                    `;
+                });
+        }
+        
+        // Load translation history on page load
+        updateTranslationHistory();
+    });
+</script>
+{% endblock %}

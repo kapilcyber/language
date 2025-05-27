@@ -1,0 +1,631 @@
+{% extends "base.html" %}
+
+{% block title %}Numbers Learning - Inclusive Learning App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .numbers-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .number-item {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem 1rem;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    
+    .number-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .number-digit {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: var(--secondary-color);
+    }
+    
+    .number-sign {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 0.5rem;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .number-sign i {
+        font-size: 2rem;
+        color: var(--secondary-color);
+    }
+    
+    .number-word {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .number-detail {
+        display: none;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .number-detail-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--secondary-color);
+    }
+    
+    .number-detail-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+    
+    .number-detail-sign {
+        flex: 1;
+        min-width: 250px;
+        text-align: center;
+    }
+    
+    .number-detail-info {
+        flex: 2;
+        min-width: 300px;
+    }
+    
+    .number-detail-examples {
+        margin-top: 1rem;
+    }
+    
+    .number-detail-examples ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    
+    .number-detail-examples li {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+    }
+    
+    .number-detail-sign-image {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1rem;
+        background-color: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .number-detail-sign-image i {
+        font-size: 5rem;
+        color: var(--secondary-color);
+    }
+    
+    .language-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .language-tab {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .language-tab.active {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+    
+    .counting-practice {
+        margin-top: 3rem;
+        padding: 2rem;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .counting-objects {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 2rem 0;
+    }
+    
+    .object-item {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+    
+    .practice-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .writing-practice {
+        margin-top: 2rem;
+    }
+    
+    .practice-pad {
+        width: 100%;
+        height: 300px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .numbers-grid {
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        }
+        
+        .number-digit {
+            font-size: 2.5rem;
+        }
+        
+        .number-detail-content {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('modules_by_category', category='numbers') }}">Numbers</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ module.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="module-header mb-4">
+        <h1>{{ module.name }}</h1>
+        <p class="lead">{{ module.description }}</p>
+    </div>
+    
+    <!-- Language Tabs -->
+    <div class="language-tabs">
+        <div class="language-tab active" data-language="current">
+            {% if current_user.is_authenticated %}
+                {{ get_language_name(current_user.preferred_language) }}
+            {% else %}
+                {{ get_language_name(session.get('language', 'en')) }}
+            {% endif %}
+        </div>
+        <div class="language-tab" data-language="en">English</div>
+        <div class="language-tab" data-language="gu">ગુજરાતી</div>
+        <div class="language-tab" data-language="hi">हिंदी</div>
+    </div>
+    
+    <!-- Number Detail View (Initially Hidden) -->
+    <div id="number-detail" class="number-detail">
+        <div class="number-detail-close" id="number-detail-close">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="number-detail-content">
+            <div class="number-detail-sign">
+                <div class="number-detail-sign-image">
+                    <i class="fas fa-hands"></i>
+                </div>
+                <button class="btn btn-sm btn-secondary mt-2">
+                    <i class="fas fa-play me-1"></i> Play Sign Animation
+                </button>
+            </div>
+            <div class="number-detail-info">
+                <h2 id="detail-number-title" class="mb-3">Number</h2>
+                <p id="detail-number-description">Description of how to form this number in sign language.</p>
+                
+                <div class="number-detail-examples">
+                    <h3 class="h5">Let's Count!</h3>
+                    <div id="number-counting-example"></div>
+                </div>
+                
+                <div class="writing-practice">
+                    <h3 class="h5">Practice Writing</h3>
+                    <canvas id="practice-pad" class="practice-pad"></canvas>
+                    <div class="d-flex justify-content-between">
+                        <button id="clear-pad" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-eraser me-1"></i> Clear
+                        </button>
+                        <button id="check-writing" class="btn btn-sm btn-secondary">
+                            <i class="fas fa-check me-1"></i> Check My Writing
+                        </button>
+                    </div>
+                    <div id="writing-feedback" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Display numbers based on selected language -->
+    <div class="numbers-container">
+        <!-- English Numbers (Default) -->
+        <div class="numbers-content" data-language="en">
+            <div class="numbers-grid">
+                {% for number in range(0, 21) %}
+                    <div class="number-item" data-number="{{ number }}" data-language="en">
+                        <div class="number-digit">{{ number }}</div>
+                        <div class="number-sign">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                        <div class="number-word">
+                            {% if number == 0 %}Zero{% elif number == 1 %}One{% elif number == 2 %}Two
+                            {% elif number == 3 %}Three{% elif number == 4 %}Four{% elif number == 5 %}Five
+                            {% elif number == 6 %}Six{% elif number == 7 %}Seven{% elif number == 8 %}Eight
+                            {% elif number == 9 %}Nine{% elif number == 10 %}Ten{% elif number == 11 %}Eleven
+                            {% elif number == 12 %}Twelve{% elif number == 13 %}Thirteen{% elif number == 14 %}Fourteen
+                            {% elif number == 15 %}Fifteen{% elif number == 16 %}Sixteen{% elif number == 17 %}Seventeen
+                            {% elif number == 18 %}Eighteen{% elif number == 19 %}Nineteen{% elif number == 20 %}Twenty
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Gujarati Numbers -->
+        <div class="numbers-content" data-language="gu" style="display: none;">
+            <div class="numbers-grid">
+                {% for number in range(0, 21) %}
+                    <div class="number-item" data-number="{{ number }}" data-language="gu">
+                        <div class="number-digit">
+                            {% if number == 0 %}૦{% elif number == 1 %}૧{% elif number == 2 %}૨
+                            {% elif number == 3 %}૩{% elif number == 4 %}૪{% elif number == 5 %}૫
+                            {% elif number == 6 %}૬{% elif number == 7 %}૭{% elif number == 8 %}૮
+                            {% elif number == 9 %}૯{% elif number == 10 %}૧૦{% elif number == 11 %}૧૧
+                            {% elif number == 12 %}૧૨{% elif number == 13 %}૧૩{% elif number == 14 %}૧૪
+                            {% elif number == 15 %}૧૫{% elif number == 16 %}૧૬{% elif number == 17 %}૧૭
+                            {% elif number == 18 %}૧૮{% elif number == 19 %}૧૯{% elif number == 20 %}૨૦
+                            {% endif %}
+                        </div>
+                        <div class="number-sign">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                        <div class="number-word">
+                            {% if number == 0 %}શૂન્ય{% elif number == 1 %}એક{% elif number == 2 %}બે
+                            {% elif number == 3 %}ત્રણ{% elif number == 4 %}ચાર{% elif number == 5 %}પાંચ
+                            {% elif number == 6 %}છ{% elif number == 7 %}સાત{% elif number == 8 %}આઠ
+                            {% elif number == 9 %}નવ{% elif number == 10 %}દસ{% elif number == 11 %}અગિયાર
+                            {% elif number == 12 %}બાર{% elif number == 13 %}તેર{% elif number == 14 %}ચૌદ
+                            {% elif number == 15 %}પંદર{% elif number == 16 %}સોળ{% elif number == 17 %}સત્તર
+                            {% elif number == 18 %}અઢાર{% elif number == 19 %}ઓગણીસ{% elif number == 20 %}વીસ
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Hindi Numbers -->
+        <div class="numbers-content" data-language="hi" style="display: none;">
+            <div class="numbers-grid">
+                {% for number in range(0, 21) %}
+                    <div class="number-item" data-number="{{ number }}" data-language="hi">
+                        <div class="number-digit">
+                            {% if number == 0 %}०{% elif number == 1 %}१{% elif number == 2 %}२
+                            {% elif number == 3 %}३{% elif number == 4 %}४{% elif number == 5 %}५
+                            {% elif number == 6 %}६{% elif number == 7 %}७{% elif number == 8 %}८
+                            {% elif number == 9 %}९{% elif number == 10 %}१०{% elif number == 11 %}११
+                            {% elif number == 12 %}१२{% elif number == 13 %}१३{% elif number == 14 %}१४
+                            {% elif number == 15 %}१५{% elif number == 16 %}१६{% elif number == 17 %}१७
+                            {% elif number == 18 %}१८{% elif number == 19 %}१९{% elif number == 20 %}२०
+                            {% endif %}
+                        </div>
+                        <div class="number-sign">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                        <div class="number-word">
+                            {% if number == 0 %}शून्य{% elif number == 1 %}एक{% elif number == 2 %}दो
+                            {% elif number == 3 %}तीन{% elif number == 4 %}चार{% elif number == 5 %}पांच
+                            {% elif number == 6 %}छह{% elif number == 7 %}सात{% elif number == 8 %}आठ
+                            {% elif number == 9 %}नौ{% elif number == 10 %}दस{% elif number == 11 %}ग्यारह
+                            {% elif number == 12 %}बारह{% elif number == 13 %}तेरह{% elif number == 14 %}चौदह
+                            {% elif number == 15 %}पंद्रह{% elif number == 16 %}सोलह{% elif number == 17 %}सत्रह
+                            {% elif number == 18 %}अठारह{% elif number == 19 %}उन्नीस{% elif number == 20 %}बीस
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Counting Practice Section -->
+    <div class="counting-practice">
+        <h2 class="h3 text-center">Counting Practice</h2>
+        <p class="text-center mb-4">Count the objects below and select the correct number.</p>
+        
+        <div class="counting-objects" id="counting-objects">
+            <!-- Objects will be generated dynamically -->
+        </div>
+        
+        <div class="text-center">
+            <h3 class="h5 mb-3">How many objects do you see?</h3>
+            <div class="btn-group" role="group" aria-label="Counting options">
+                <button type="button" class="btn btn-outline-secondary counting-option" data-value="1">1</button>
+                <button type="button" class="btn btn-outline-secondary counting-option" data-value="2">2</button>
+                <button type="button" class="btn btn-outline-secondary counting-option" data-value="3">3</button>
+                <button type="button" class="btn btn-outline-secondary counting-option" data-value="4">4</button>
+                <button type="button" class="btn btn-outline-secondary counting-option" data-value="5">5</button>
+            </div>
+            
+            <div id="counting-feedback" class="mt-3" style="display: none;"></div>
+            
+            <div class="practice-controls">
+                <button id="new-counting-question" class="btn btn-primary">
+                    <i class="fas fa-sync-alt me-1"></i> New Question
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lessons List -->
+    {% if lessons %}
+        <div class="lessons-section mt-5">
+            <h2 class="h3 mb-3">Lessons</h2>
+            <div class="list-group">
+                {% for lesson in lessons %}
+                    <a href="{{ url_for('lesson_detail', module_slug=module.slug, lesson_slug=lesson.slug) }}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="h5 mb-1">{{ lesson.name }}</h3>
+                            <p class="mb-1 text-muted">{{ lesson.content[:100] + '...' if lesson.content and lesson.content|length > 100 else lesson.content }}</p>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/writing_pad.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language tab switching
+        const languageTabs = document.querySelectorAll('.language-tab');
+        const numbersContents = document.querySelectorAll('.numbers-content');
+        
+        languageTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const language = this.getAttribute('data-language');
+                
+                // Update active tab
+                languageTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding content
+                numbersContents.forEach(content => {
+                    const contentLang = content.getAttribute('data-language');
+                    
+                    if (contentLang === language || (language === 'current' && contentLang === '{{ current_user.preferred_language if current_user.is_authenticated else session.get("language", "en") }}')) {
+                        content.style.display = 'block';
+                    } else {
+                        content.style.display = 'none';
+                    }
+                });
+                
+                // Hide number detail when switching languages
+                document.getElementById('number-detail').style.display = 'none';
+            });
+        });
+        
+        // Number detail view
+        const numberItems = document.querySelectorAll('.number-item');
+        const numberDetail = document.getElementById('number-detail');
+        const numberDetailClose = document.getElementById('number-detail-close');
+        const detailNumberTitle = document.getElementById('detail-number-title');
+        const detailNumberDescription = document.getElementById('detail-number-description');
+        const numberCountingExample = document.getElementById('number-counting-example');
+        
+        numberItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const number = this.getAttribute('data-number');
+                const language = this.getAttribute('data-language');
+                
+                // Set number detail content
+                if (language === 'en') {
+                    detailNumberTitle.textContent = `Number ${number}`;
+                    detailNumberDescription.textContent = `The sign for the number "${number}" is formed by...`;
+                    
+                    // Show counting examples
+                    let countingHtml = '';
+                    for (let i = 1; i <= number; i++) {
+                        countingHtml += `<span class="badge bg-secondary me-1 mb-1 p-2">${i}</span>`;
+                    }
+                    numberCountingExample.innerHTML = countingHtml;
+                    
+                } else if (language === 'gu') {
+                    // Convert to Gujarati numerals
+                    const gujaratiNumerals = ['૦', '૧', '૨', '૩', '૪', '૫', '૬', '૭', '૮', '૯', '૧૦',
+                                           '૧૧', '૧૨', '૧૩', '૧૪', '૧૫', '૧૬', '૧૭', '૧૮', '૧૯', '૨૦'];
+                    const gujaratiWords = ['શૂન્ય', 'એક', 'બે', 'ત્રણ', 'ચાર', 'પાંચ', 'છ', 'સાત', 'આઠ', 'નવ', 'દસ',
+                                        'અગિયાર', 'બાર', 'તેર', 'ચૌદ', 'પંદર', 'સોળ', 'સત્તર', 'અઢાર', 'ઓગણીસ', 'વીસ'];
+                    
+                    detailNumberTitle.textContent = `${gujaratiNumerals[number]} - ${gujaratiWords[number]}`;
+                    detailNumberDescription.textContent = `"${gujaratiNumerals[number]}" અંક માટે સંકેત બનાવવામાં આવે છે...`;
+                    
+                    // Show counting examples
+                    let countingHtml = '';
+                    for (let i = 1; i <= number; i++) {
+                        countingHtml += `<span class="badge bg-secondary me-1 mb-1 p-2">${gujaratiNumerals[i]}</span>`;
+                    }
+                    numberCountingExample.innerHTML = countingHtml;
+                    
+                } else if (language === 'hi') {
+                    // Convert to Hindi numerals
+                    const hindiNumerals = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९', '१०',
+                                       '११', '१२', '१३', '१४', '१५', '१६', '१७', '१८', '१९', '२०'];
+                    const hindiWords = ['शून्य', 'एक', 'दो', 'तीन', 'चार', 'पांच', 'छह', 'सात', 'आठ', 'नौ', 'दस',
+                                     'ग्यारह', 'बारह', 'तेरह', 'चौदह', 'पंद्रह', 'सोलह', 'सत्रह', 'अठारह', 'उन्नीस', 'बीस'];
+                    
+                    detailNumberTitle.textContent = `${hindiNumerals[number]} - ${hindiWords[number]}`;
+                    detailNumberDescription.textContent = `"${hindiNumerals[number]}" अंक के लिए संकेत बनाया जाता है...`;
+                    
+                    // Show counting examples
+                    let countingHtml = '';
+                    for (let i = 1; i <= number; i++) {
+                        countingHtml += `<span class="badge bg-secondary me-1 mb-1 p-2">${hindiNumerals[i]}</span>`;
+                    }
+                    numberCountingExample.innerHTML = countingHtml;
+                }
+                
+                // Show number detail
+                numberDetail.style.display = 'block';
+                
+                // Scroll to detail view
+                numberDetail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        
+        // Close number detail
+        numberDetailClose.addEventListener('click', function() {
+            numberDetail.style.display = 'none';
+        });
+        
+        // Writing practice feedback
+        const checkWritingBtn = document.getElementById('check-writing');
+        const writingFeedback = document.getElementById('writing-feedback');
+        
+        if (checkWritingBtn) {
+            checkWritingBtn.addEventListener('click', function() {
+                // Simulate recognition feedback
+                writingFeedback.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> Great job! Your number writing is clear and legible.
+                    </div>
+                `;
+                writingFeedback.style.display = 'block';
+            });
+        }
+        
+        // Counting practice
+        const countingObjects = document.getElementById('counting-objects');
+        const countingOptions = document.querySelectorAll('.counting-option');
+        const countingFeedback = document.getElementById('counting-feedback');
+        const newCountingQuestionBtn = document.getElementById('new-counting-question');
+        let currentCount = 0;
+        
+        // Generate a new counting question
+        function generateCountingQuestion() {
+            // Clear previous objects
+            countingObjects.innerHTML = '';
+            
+            // Reset feedback
+            countingFeedback.style.display = 'none';
+            
+            // Reset options
+            countingOptions.forEach(option => {
+                option.classList.remove('btn-success', 'btn-danger');
+                option.classList.add('btn-outline-secondary');
+                option.disabled = false;
+            });
+            
+            // Generate random count between 1 and 5
+            currentCount = Math.floor(Math.random() * 5) + 1;
+            
+            // Choose a random object (emoji)
+            const objects = ['🍎', '🍌', '🚗', '🏠', '🐶', '🐱', '🦄', '🎈', '⚽', '🎁'];
+            const randomObject = objects[Math.floor(Math.random() * objects.length)];
+            
+            // Create and add objects to the container
+            for (let i = 0; i < currentCount; i++) {
+                const objectElement = document.createElement('div');
+                objectElement.className = 'object-item';
+                objectElement.textContent = randomObject;
+                countingObjects.appendChild(objectElement);
+            }
+        }
+        
+        // Initialize with a question
+        generateCountingQuestion();
+        
+        // Handle option selection
+        countingOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const selectedValue = parseInt(this.getAttribute('data-value'));
+                
+                // Disable further selection
+                countingOptions.forEach(opt => {
+                    opt.disabled = true;
+                });
+                
+                // Check if answer is correct
+                if (selectedValue === currentCount) {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-success');
+                    
+                    countingFeedback.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Correct! There ${currentCount === 1 ? 'is' : 'are'} ${currentCount} ${currentCount === 1 ? 'object' : 'objects'}.
+                        </div>
+                    `;
+                } else {
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-danger');
+                    
+                    // Highlight correct answer
+                    countingOptions.forEach(opt => {
+                        if (parseInt(opt.getAttribute('data-value')) === currentCount) {
+                            opt.classList.remove('btn-outline-secondary');
+                            opt.classList.add('btn-success');
+                        }
+                    });
+                    
+                    countingFeedback.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle"></i> Not quite. There ${currentCount === 1 ? 'is' : 'are'} ${currentCount} ${currentCount === 1 ? 'object' : 'objects'}.
+                        </div>
+                    `;
+                }
+                
+                countingFeedback.style.display = 'block';
+            });
+        });
+        
+        // New question button
+        if (newCountingQuestionBtn) {
+            newCountingQuestionBtn.addEventListener('click', generateCountingQuestion);
+        }
+    });
+</script>
+{% endblock %}

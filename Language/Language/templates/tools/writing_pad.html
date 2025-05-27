@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}Writing Pad Tool{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Writing Practice Pad</h1>
+            <p class="text-muted">Use this pad to practice writing letters, numbers, and words.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Drawing Canvas</h5>
+                    <div>
+                        <button id="clear-btn" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash-alt"></i> Clear
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="drawing-container mb-3">
+                        <canvas id="writing-canvas" class="drawing-canvas" width="800" height="400"></canvas>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label">Color:</label>
+                            <div class="d-flex">
+                                <button class="color-option active me-2" style="background-color: black; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd;"></button>
+                                <button class="color-option me-2" style="background-color: blue; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd;"></button>
+                                <button class="color-option me-2" style="background-color: red; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd;"></button>
+                                <button class="color-option me-2" style="background-color: green; width: 30px; height: 30px; border-radius: 50%; border: 2px solid #ddd;"></button>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label for="line-width" class="form-label">Line Width: <span id="width-value">5</span>px</label>
+                            <input type="range" class="form-range" id="line-width" min="1" max="20" value="5">
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button id="verify-drawing" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Verify My Writing
+                        </button>
+                    </div>
+                    
+                    <div id="verification-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Practice Examples</h5>
+                </div>
+                <div class="card-body">
+                    <div class="practice-examples">
+                        <div class="example-item mb-3">
+                            <div class="fw-bold mb-1">Letters:</div>
+                            <div class="example-content d-flex flex-wrap">
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">A</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">B</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">C</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">अ</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">क</span>
+                            </div>
+                        </div>
+                        
+                        <div class="example-item mb-3">
+                            <div class="fw-bold mb-1">Numbers:</div>
+                            <div class="example-content d-flex flex-wrap">
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">1</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">2</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">3</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">४</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2 fs-5">५</span>
+                            </div>
+                        </div>
+                        
+                        <div class="example-item mb-3">
+                            <div class="fw-bold mb-1">Words:</div>
+                            <div class="example-content d-flex flex-wrap">
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2">Hello</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2">नमस्ते</span>
+                                <span class="badge bg-light text-dark me-1 mb-1 p-2">કેમ છો</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Writing Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Write slowly and deliberately</li>
+                        <li>Practice the same letter multiple times</li>
+                        <li>Try to maintain consistent sizing</li>
+                        <li>The clearer your writing, the better it can be recognized</li>
+                        <li>Use the verification tool to check your progress</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/simple_drawing.js') }}"></script>
+{% endblock %}

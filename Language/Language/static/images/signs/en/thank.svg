@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Thank You sign in ASL -->
+  <g stroke="black" stroke-width="2" fill="none">
+    <!-- Hand position for "thank you" -->
+    <g transform="translate(0,-5)">
+      <!-- Palm/face -->
+      <ellipse cx="100" cy="100" rx="40" ry="50" fill="#f9d6bc"/>
+      
+      <!-- Fingers touching chin/mouth -->
+      <path d="M100,80 Q110,70 120,75" stroke-linecap="round"/>
+      <path d="M120,75 Q125,85 120,95" stroke-linecap="round"/>
+      
+      <!-- Chin outline -->
+      <path d="M85,95 Q100,105 115,95" stroke-linecap="round"/>
+      
+      <!-- Eyes -->
+      <ellipse cx="90" cy="75" rx="3" ry="4" fill="black"/>
+      <ellipse cx="110" cy="75" rx="3" ry="4" fill="black"/>
+      
+      <!-- Coming away from face motion -->
+      <path d="M120,95 Q140,105 150,115" fill="#f9d6bc" stroke-linecap="round"/>
+      <path d="M150,115 Q155,120 160,125" stroke-linecap="round" stroke-dasharray="5,3" stroke="#0066cc"/>
+      
+      <!-- Motion lines -->
+      <path d="M160,125 Q170,130 175,135" stroke="#0066cc" stroke-dasharray="5,3"/>
+      <path d="M170,115 Q180,120 185,125" stroke="#0066cc" stroke-dasharray="5,3"/>
+    </g>
+  </g>
+  
+  <!-- Text label -->
+  <text x="100" y="185" text-anchor="middle" font-family="Arial" font-size="16">
+    Thank You
+  </text>
+</svg>

@@ -1,0 +1,638 @@
+{% extends 'base.html' %}
+
+{% block title %}Math Module{% endblock %}
+
+{% block styles %}
+<style>
+    .math-card {
+        transition: transform 0.3s;
+    }
+    
+    .math-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .problem-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        padding: 20px;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .math-operation-btn {
+        padding: 10px 20px;
+        border-radius: 30px;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .math-operation-btn.active {
+        box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5);
+    }
+    
+    .difficulty-selector {
+        margin-bottom: 20px;
+    }
+    
+    .tips-container {
+        display: none;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    
+    .progress-stats {
+        padding: 20px;
+        border-radius: 4px;
+        margin-top: 20px;
+    }
+    
+    #answer-input {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+    
+    #explanation {
+        display: none;
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-3">Math Module</h1>
+            <p class="text-muted">
+                Practice math problems with visual aids and sign language support.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <button id="show-tips-btn" class="btn btn-outline-info">
+                <i class="fas fa-lightbulb"></i> Show Tips
+            </button>
+        </div>
+    </div>
+
+    <div class="tips-container bg-light" id="tips-container">
+        <h5><i class="fas fa-lightbulb"></i> Learning Tips</h5>
+        <div id="tips-content">
+            <p>Select an operation above to see specific tips for that type of math problem.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Operation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="operation-selector">
+                        <button class="btn btn-outline-primary math-operation-btn active" data-operation="addition">
+                            <i class="fas fa-plus"></i> Addition
+                        </button>
+                        <button class="btn btn-outline-primary math-operation-btn" data-operation="subtraction">
+                            <i class="fas fa-minus"></i> Subtraction
+                        </button>
+                        <button class="btn btn-outline-primary math-operation-btn" data-operation="multiplication">
+                            <i class="fas fa-times"></i> Multiplication
+                        </button>
+                        <button class="btn btn-outline-primary math-operation-btn" data-operation="division">
+                            <i class="fas fa-divide"></i> Division
+                        </button>
+                    </div>
+                    
+                    <div class="difficulty-selector mt-4">
+                        <h6>Difficulty Level</h6>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="difficulty" id="easy" autocomplete="off" checked>
+                            <label class="btn btn-outline-success" for="easy">Easy</label>
+                            
+                            <input type="radio" class="btn-check" name="difficulty" id="medium" autocomplete="off">
+                            <label class="btn btn-outline-warning" for="medium">Medium</label>
+                            
+                            <input type="radio" class="btn-check" name="difficulty" id="hard" autocomplete="off">
+                            <label class="btn btn-outline-danger" for="hard">Hard</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="problem-display bg-light" id="problem-display">
+                        2 + 2 = ?
+                    </div>
+                    
+                    <form id="answer-form">
+                        <div class="mb-3">
+                            <label for="answer-input" class="form-label">Your Answer</label>
+                            <input type="number" class="form-control form-control-lg" id="answer-input" placeholder="Enter your answer">
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check"></i> Check Answer
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="feedback" class="mt-4"></div>
+                    <div id="explanation" class="alert alert-info"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3" style="height: 20px;">
+                        <div class="progress-bar" id="session-progress" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                    </div>
+                    
+                    <div class="progress-stats bg-light">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="h4 mb-0 text-success" id="correct-count">0</div>
+                                <div class="small text-muted">Correct</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="h4 mb-0 text-danger" id="incorrect-count">0</div>
+                                <div class="small text-muted">Incorrect</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="h4 mb-0" id="total-problems">0</div>
+                                <div class="small text-muted">Total</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Visual Representation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-3" id="visual-representation">
+                        <p class="text-muted">A visual representation of the problem will appear here after you answer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/math_module.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Operation selection
+        const operationBtns = document.querySelectorAll('.math-operation-btn');
+        operationBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                operationBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                generateNewProblem();
+                updateTips(this.dataset.operation);
+            });
+        });
+        
+        // Difficulty selection
+        const difficultyInputs = document.querySelectorAll('input[name="difficulty"]');
+        difficultyInputs.forEach(input => {
+            input.addEventListener('change', generateNewProblem);
+        });
+        
+        // Show/hide tips
+        const showTipsBtn = document.getElementById('show-tips-btn');
+        showTipsBtn.addEventListener('click', toggleTips);
+        
+        // Answer form submission
+        const answerForm = document.getElementById('answer-form');
+        answerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            checkAnswer();
+        });
+        
+        // Initialize with a new problem
+        generateNewProblem();
+        updateTips('addition');
+    });
+    
+    // Operation tips
+    function updateTips(operation) {
+        const tipsContent = document.getElementById('tips-content');
+        let tips = '';
+        
+        switch(operation) {
+            case 'addition':
+                tips = `
+                <ul>
+                    <li>Addition means combining two or more numbers to find their total sum.</li>
+                    <li>You can use your fingers to count for small numbers.</li>
+                    <li>For larger numbers, try breaking them down into tens and ones.</li>
+                    <li>Remember that addition is commutative: 2 + 3 = 3 + 2.</li>
+                </ul>
+                `;
+                break;
+            case 'subtraction':
+                tips = `
+                <ul>
+                    <li>Subtraction means taking away one number from another.</li>
+                    <li>Start with the larger number and count backward by the smaller number.</li>
+                    <li>For larger numbers, you can use place value to help (tens, ones).</li>
+                    <li>Remember that subtraction is NOT commutative: 5 - 3 ≠ 3 - 5.</li>
+                </ul>
+                `;
+                break;
+            case 'multiplication':
+                tips = `
+                <ul>
+                    <li>Multiplication is repeated addition: 4 × 3 means 4 + 4 + 4 or 3 + 3 + 3 + 3.</li>
+                    <li>Learn your times tables to make multiplication easier.</li>
+                    <li>Multiply by 10 by adding a zero to the end of the number.</li>
+                    <li>Remember that multiplication is commutative: 4 × 3 = 3 × 4.</li>
+                </ul>
+                `;
+                break;
+            case 'division':
+                tips = `
+                <ul>
+                    <li>Division means sharing equally or finding how many groups you can make.</li>
+                    <li>Division is the opposite of multiplication. If 3 × 4 = 12, then 12 ÷ 4 = 3.</li>
+                    <li>Divide by 10 by moving the decimal point one place to the left.</li>
+                    <li>Remember that division is NOT commutative: 10 ÷ 2 ≠ 2 ÷ 10.</li>
+                </ul>
+                `;
+                break;
+        }
+        
+        tipsContent.innerHTML = tips;
+    }
+    
+    function toggleTips() {
+        const tipsContainer = document.getElementById('tips-container');
+        const showTipsBtn = document.getElementById('show-tips-btn');
+        
+        if (tipsContainer.style.display === 'block') {
+            tipsContainer.style.display = 'none';
+            showTipsBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Show Tips';
+        } else {
+            tipsContainer.style.display = 'block';
+            showTipsBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Hide Tips';
+        }
+    }
+    
+    // Simple implementations for demonstration
+    let currentProblem = {};
+    let stats = {
+        correct: 0,
+        incorrect: 0,
+        total: 0
+    };
+    
+    function generateNewProblem() {
+        const operation = document.querySelector('.math-operation-btn.active').dataset.operation;
+        const difficulty = document.querySelector('input[name="difficulty"]:checked').id;
+        
+        currentProblem = generateProblem(operation, difficulty);
+        displayProblem(currentProblem);
+        
+        // Clear previous feedback and answer
+        document.getElementById('feedback').innerHTML = '';
+        document.getElementById('explanation').style.display = 'none';
+        document.getElementById('answer-input').value = '';
+        document.getElementById('visual-representation').innerHTML = 
+            '<p class="text-muted">A visual representation of the problem will appear here after you answer.</p>';
+    }
+    
+    function generateProblem(operation, difficulty) {
+        let num1, num2, answer;
+        
+        // Set number ranges based on difficulty
+        let range = {
+            easy: { min: 1, max: 10 },
+            medium: { min: 10, max: 50 },
+            hard: { min: 50, max: 100 }
+        }[difficulty];
+        
+        num1 = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        num2 = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        
+        // Ensure division problems have whole number answers for simplicity
+        if (operation === 'division') {
+            // For division, ensure num1 is divisible by num2
+            num2 = Math.floor(Math.random() * 9) + 2; // 2-10
+            num1 = num2 * (Math.floor(Math.random() * (range.max / num2)) + 1);
+        }
+        
+        // For subtraction, ensure num1 >= num2 to avoid negative answers
+        if (operation === 'subtraction' && num1 < num2) {
+            [num1, num2] = [num2, num1];
+        }
+        
+        // Calculate answer
+        switch(operation) {
+            case 'addition':
+                answer = num1 + num2;
+                break;
+            case 'subtraction':
+                answer = num1 - num2;
+                break;
+            case 'multiplication':
+                answer = num1 * num2;
+                break;
+            case 'division':
+                answer = num1 / num2;
+                break;
+        }
+        
+        return {
+            num1: num1,
+            num2: num2,
+            operation: operation,
+            answer: answer
+        };
+    }
+    
+    function displayProblem(problem) {
+        const display = document.getElementById('problem-display');
+        let symbol;
+        
+        switch(problem.operation) {
+            case 'addition':
+                symbol = '+';
+                break;
+            case 'subtraction':
+                symbol = '-';
+                break;
+            case 'multiplication':
+                symbol = '×';
+                break;
+            case 'division':
+                symbol = '÷';
+                break;
+        }
+        
+        display.textContent = `${problem.num1} ${symbol} ${problem.num2} = ?`;
+    }
+    
+    function checkAnswer() {
+        const userAnswer = parseFloat(document.getElementById('answer-input').value);
+        const feedback = document.getElementById('feedback');
+        const explanation = document.getElementById('explanation');
+        const visualRepresentation = document.getElementById('visual-representation');
+        
+        if (isNaN(userAnswer)) {
+            feedback.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Please enter a valid number.
+                </div>
+            `;
+            return;
+        }
+        
+        const isCorrect = Math.abs(userAnswer - currentProblem.answer) < 0.001; // Allow for floating point precision issues
+        
+        if (isCorrect) {
+            feedback.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> Correct! ${currentProblem.num1} ${getOperationSymbol()} ${currentProblem.num2} = ${currentProblem.answer}
+                </div>
+            `;
+            stats.correct++;
+        } else {
+            feedback.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-times-circle"></i> Incorrect. The correct answer is ${currentProblem.answer}.
+                </div>
+            `;
+            stats.incorrect++;
+        }
+        
+        stats.total++;
+        updateStats();
+        
+        // Show explanation
+        explanation.innerHTML = getExplanation(currentProblem);
+        explanation.style.display = 'block';
+        
+        // Show visual representation
+        visualRepresentation.innerHTML = generateVisualRepresentation(currentProblem);
+        
+        // Generate new problem after 3 seconds if answer was correct
+        if (isCorrect) {
+            setTimeout(generateNewProblem, 3000);
+        }
+    }
+    
+    function getOperationSymbol() {
+        switch(currentProblem.operation) {
+            case 'addition': return '+';
+            case 'subtraction': return '-';
+            case 'multiplication': return '×';
+            case 'division': return '÷';
+        }
+    }
+    
+    function getExplanation(problem) {
+        let explanation = '';
+        
+        switch(problem.operation) {
+            case 'addition':
+                explanation = `To add ${problem.num1} and ${problem.num2}, you can:
+                <ul>
+                    <li>Start with ${problem.num1}</li>
+                    <li>Count up ${problem.num2} more</li>
+                    <li>Result: ${problem.answer}</li>
+                </ul>`;
+                break;
+            case 'subtraction':
+                explanation = `To subtract ${problem.num2} from ${problem.num1}, you can:
+                <ul>
+                    <li>Start with ${problem.num1}</li>
+                    <li>Count down ${problem.num2}</li>
+                    <li>Result: ${problem.answer}</li>
+                </ul>`;
+                break;
+            case 'multiplication':
+                explanation = `To multiply ${problem.num1} by ${problem.num2}, you can:
+                <ul>
+                    <li>Add ${problem.num1} to itself ${problem.num2} times</li>
+                    <li>${problem.num1} + ${problem.num1} + ... (${problem.num2} times)</li>
+                    <li>Result: ${problem.answer}</li>
+                </ul>`;
+                break;
+            case 'division':
+                explanation = `To divide ${problem.num1} by ${problem.num2}, you can:
+                <ul>
+                    <li>Find how many groups of ${problem.num2} fit into ${problem.num1}</li>
+                    <li>${problem.num1} ÷ ${problem.num2} = ${problem.answer}</li>
+                </ul>`;
+                break;
+        }
+        
+        return explanation;
+    }
+    
+    function generateVisualRepresentation(problem) {
+        // Simple visual representation using emojis or symbols
+        let visual = '<div class="row">';
+        
+        switch(problem.operation) {
+            case 'addition':
+                visual += `<div class="col-md-5 text-center">
+                    ${getCircleRepresentation(problem.num1)}
+                    <p class="mt-2">${problem.num1}</p>
+                </div>
+                <div class="col-md-2 text-center">
+                    <h3>+</h3>
+                </div>
+                <div class="col-md-5 text-center">
+                    ${getCircleRepresentation(problem.num2)}
+                    <p class="mt-2">${problem.num2}</p>
+                </div>`;
+                break;
+                
+            case 'subtraction':
+                visual += `<div class="col-md-5 text-center">
+                    ${getCircleRepresentation(problem.num1)}
+                    <p class="mt-2">${problem.num1}</p>
+                </div>
+                <div class="col-md-2 text-center">
+                    <h3>-</h3>
+                </div>
+                <div class="col-md-5 text-center">
+                    ${getCircleRepresentation(problem.num2)}
+                    <p class="mt-2">${problem.num2}</p>
+                </div>`;
+                break;
+                
+            case 'multiplication':
+                visual += `<div class="col-md-12 text-center">
+                    <div class="row">
+                        ${getGridRepresentation(problem.num1, problem.num2)}
+                    </div>
+                    <p class="mt-4">${problem.num1} rows × ${problem.num2} columns = ${problem.answer} total</p>
+                </div>`;
+                break;
+                
+            case 'division':
+                visual += `<div class="col-md-12 text-center">
+                    <p>Dividing ${problem.num1} into groups of ${problem.num2}</p>
+                    ${getDivisionRepresentation(problem.num1, problem.num2)}
+                    <p class="mt-4">${problem.num1} ÷ ${problem.num2} = ${problem.answer} groups</p>
+                </div>`;
+                break;
+        }
+        
+        visual += '</div>';
+        return visual;
+    }
+    
+    function getCircleRepresentation(number) {
+        let circles = '';
+        const maxPerRow = 5;
+        const rows = Math.ceil(number / maxPerRow);
+        
+        for (let i = 0; i < rows; i++) {
+            circles += '<div class="mb-2">';
+            const circlesInThisRow = Math.min(maxPerRow, number - (i * maxPerRow));
+            
+            for (let j = 0; j < circlesInThisRow; j++) {
+                circles += '<span class="mx-1" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background-color: #007bff;"></span>';
+            }
+            
+            circles += '</div>';
+        }
+        
+        return circles;
+    }
+    
+    function getGridRepresentation(rows, cols) {
+        let grid = '';
+        
+        // Limit size for large numbers
+        const maxDisplay = 10;
+        const displayRows = Math.min(rows, maxDisplay);
+        const displayCols = Math.min(cols, maxDisplay);
+        const isLimited = rows > maxDisplay || cols > maxDisplay;
+        
+        for (let i = 0; i < displayRows; i++) {
+            grid += `<div class="col-12 mb-1">`;
+            for (let j = 0; j < displayCols; j++) {
+                grid += '<span class="mx-1" style="display: inline-block; width: 15px; height: 15px; border-radius: 50%; background-color: #28a745;"></span>';
+            }
+            grid += `</div>`;
+        }
+        
+        if (isLimited) {
+            grid += `<div class="col-12"><p class="text-muted small">(Visual limited to ${maxDisplay}x${maxDisplay} for display purposes)</p></div>`;
+        }
+        
+        return grid;
+    }
+    
+    function getDivisionRepresentation(total, groupSize) {
+        let representation = '<div class="d-flex flex-wrap justify-content-center">';
+        const groups = Math.floor(total / groupSize);
+        
+        // Limit display for large numbers
+        const maxGroups = 10;
+        const displayGroups = Math.min(groups, maxGroups);
+        const isLimited = groups > maxGroups;
+        
+        for (let i = 0; i < displayGroups; i++) {
+            representation += `
+                <div class="border rounded p-2 m-2 text-center" style="width: 80px;">
+                    <div class="mb-1">Group ${i+1}</div>
+                    ${getCircleRepresentation(groupSize)}
+                </div>
+            `;
+        }
+        
+        if (isLimited) {
+            representation += `<div class="col-12 mt-2"><p class="text-muted small">(Showing ${displayGroups} of ${groups} groups for display purposes)</p></div>`;
+        }
+        
+        representation += '</div>';
+        return representation;
+    }
+    
+    function updateStats() {
+        document.getElementById('correct-count').textContent = stats.correct;
+        document.getElementById('incorrect-count').textContent = stats.incorrect;
+        document.getElementById('total-problems').textContent = stats.total;
+        
+        const progressPercent = Math.round((stats.correct / stats.total) * 100) || 0;
+        const progressBar = document.getElementById('session-progress');
+        progressBar.style.width = `${progressPercent}%`;
+        progressBar.textContent = `${progressPercent}%`;
+        
+        if (progressPercent < 33) {
+            progressBar.className = 'progress-bar bg-danger';
+        } else if (progressPercent < 66) {
+            progressBar.className = 'progress-bar bg-warning';
+        } else {
+            progressBar.className = 'progress-bar bg-success';
+        }
+    }
+</script>
+{% endblock %}

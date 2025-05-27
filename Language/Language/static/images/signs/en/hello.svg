@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hello sign in ASL -->
+  <g stroke="black" stroke-width="2" fill="none">
+    <!-- Palm of the hand -->
+    <path d="M70,60 Q100,50 130,60 Q140,90 130,140 Q100,150 70,140 Q60,90 70,60 Z" fill="#f9d6bc"/>
+    
+    <!-- Thumb -->
+    <path d="M70,60 Q60,50 50,60 Q45,70 50,80" fill="#f9d6bc" stroke-linecap="round"/>
+    
+    <!-- Fingers -->
+    <path d="M85,50 L85,30" stroke-linecap="round"/>
+    <path d="M100,45 L100,25" stroke-linecap="round"/>
+    <path d="M115,50 L115,30" stroke-linecap="round"/>
+    <path d="M130,60 L130,40" stroke-linecap="round"/>
+    
+    <!-- Wrist -->
+    <path d="M70,140 L60,160" stroke-linecap="round"/>
+    <path d="M130,140 L140,160" stroke-linecap="round"/>
+    
+    <!-- Motion lines for waving -->
+    <path d="M150,70 Q160,80 165,70" stroke="#0066cc" stroke-dasharray="5,3"/>
+    <path d="M150,90 Q160,100 165,90" stroke="#0066cc" stroke-dasharray="5,3"/>
+    <path d="M150,110 Q160,120 165,110" stroke="#0066cc" stroke-dasharray="5,3"/>
+  </g>
+  
+  <!-- Text label -->
+  <text x="100" y="185" text-anchor="middle" font-family="Arial" font-size="16">
+    Hello
+  </text>
+</svg>

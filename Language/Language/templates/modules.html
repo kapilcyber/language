@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category|title }} Modules - Inclusive Learning App{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ category|title }}</li>
+        </ol>
+    </nav>
+    
+    <header class="section-header text-center mb-5">
+        <h1 class="display-5">{{ category|title }} Learning Modules</h1>
+        <p class="lead">
+            {% if category == 'alphabet' %}
+                Learn alphabets in sign language with interactive exercises.
+            {% elif category == 'numbers' %}
+                Master numbers in sign language through fun counting activities.
+            {% elif category == 'words' %}
+                Build your sign language vocabulary with essential words.
+            {% elif category == 'math' %}
+                Learn basic mathematics with sign language support.
+            {% endif %}
+        </p>
+    </header>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for module in modules %}
+            <div class="col">
+                <div class="card h-100 module-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ module.name }}</h5>
+                        <p class="card-text">{{ module.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ url_for('module_detail', slug=module.slug) }}" class="btn btn-primary">
+                                <i class="fas fa-book-open me-1"></i> Start Learning
+                            </a>
+                            {% if current_user.is_authenticated %}
+                                {% set progress = current_user.progress.filter_by(module_id=module.id).first() %}
+                                {% if progress %}
+                                    <div class="progress" style="width: 100px;" title="{{ progress.progress_percent }}% completed">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ progress.progress_percent }}%;" 
+                                             aria-valuenow="{{ progress.progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+                                             {{ progress.progress_percent }}%
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <span class="badge bg-secondary">New</span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,269 @@
+/* Dashboard Styles */
+
+.dashboard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-card {
+    flex: 1;
+    min-width: 300px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card-header {
+    padding: 1.25rem;
+    background-color: var(--primary-color);
+    color: var(--light-text);
+}
+
+.dashboard-card-body {
+    padding: 1.5rem;
+}
+
+.dashboard-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    flex: 1;
+    min-width: 200px;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card.primary {
+    background-color: var(--primary-color);
+    color: var(--light-text);
+}
+
+.stat-card.secondary {
+    background-color: var(--secondary-color);
+    color: var(--light-text);
+}
+
+.stat-card.accent {
+    background-color: var(--accent-color);
+    color: var(--dark-color);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+}
+
+.progress-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.progress-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.progress-item:last-child {
+    border-bottom: none;
+}
+
+.progress-title {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--success-color);
+    transition: width 0.3s ease;
+}
+
+.recent-activity {
+    margin-top: 2rem;
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: flex-start;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    margin: 0 0 0.25rem;
+    font-weight: 600;
+}
+
+.activity-time {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.student-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.student-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.student-item:hover {
+    background-color: #f8f9fa;
+}
+
+.student-item:last-child {
+    border-bottom: none;
+}
+
+.student-info {
+    flex: 1;
+}
+
+.student-name {
+    margin: 0 0 0.25rem;
+    font-weight: 600;
+}
+
+.student-email {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+}
+
+.student-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.quiz-results {
+    margin-top: 2rem;
+}
+
+.quiz-result-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    transition: var(--transition);
+}
+
+.quiz-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.quiz-result-item:last-child {
+    border-bottom: none;
+}
+
+.quiz-result-title {
+    margin: 0 0 0.5rem;
+    font-weight: 600;
+}
+
+.quiz-score {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.charts-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.chart-card {
+    flex: 1;
+    min-width: 300px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 1.5rem;
+}
+
+.chart-title {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}

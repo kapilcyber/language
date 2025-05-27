@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Text to Sign Language{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3 mb-3">Text to Sign Language</h1>
+            <p class="text-muted">
+                Convert text into sign language visuals and descriptions.
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Input Text</h5>
+                </div>
+                <div class="card-body">
+                    <form id="translate-form">
+                        <div class="mb-3">
+                            <label for="input-language" class="form-label">Input Language</label>
+                            <select class="form-select" id="input-language">
+                                <option value="en" selected>English</option>
+                                <option value="hi">Hindi</option>
+                                <option value="gu">Gujarati</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="output-language" class="form-label">Output Sign Language</label>
+                            <select class="form-select" id="output-language">
+                                <option value="en" selected>English (ASL)</option>
+                                <option value="hi">Indian Sign Language (ISL)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="input-text" class="form-label">Enter Text</label>
+                            <textarea class="form-control" id="input-text" rows="5" placeholder="Type text to translate to sign language...">hello thank you please</textarea>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" id="translate-btn">
+                                <i class="fas fa-language"></i> Translate to Sign Language
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="alert alert-danger mt-3" id="error-message" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Translation Tips</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li>Keep sentences simple and direct</li>
+                        <li>Sign language has different grammar than spoken languages</li>
+                        <li>Words may be signed in a different order</li>
+                        <li>Some concepts might be expressed differently in sign language</li>
+                        <li>Practice the signs shown to improve your signing fluency</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Sign Language Translation</h5>
+                </div>
+                <div class="card-body">
+                    <div id="sign-result-container">
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-sign-language fa-3x mb-3"></i>
+                            <p>Enter text and click translate to see sign language results.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/text_to_sign_fixed.js') }}"></script>
+{% endblock %}

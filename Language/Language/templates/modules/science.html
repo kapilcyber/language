@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+
+{% block title %}Science Module{% endblock %}
+
+{% block styles %}
+<style>
+    .science-topic-card {
+        transition: transform 0.3s;
+        height: 100%;
+    }
+    
+    .science-topic-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .topic-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .experiment-card {
+        margin-bottom: 20px;
+    }
+    
+    .experiment-video {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+    
+    .fact-card {
+        background-color: #f8f9fa;
+        border-left: 4px solid #17a2b8;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .quiz-question {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+    }
+    
+    .concept-diagram {
+        max-width: 100%;
+        border-radius: 8px;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="h3 mb-3">Science Module</h1>
+            <p class="text-muted">
+                Explore scientific concepts with visual experiments and sign language support.
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <div class="btn-group">
+                <button class="btn btn-outline-primary active" id="all-topics-btn">All Topics</button>
+                <button class="btn btn-outline-primary" id="favorites-btn">Favorites</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5" id="topics-section">
+        <div class="col-12 mb-4">
+            <h2 class="h4">Science Topics</h2>
+            <hr>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card science-topic-card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="topic-icon text-primary">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <h3 class="h5">Plants & Photosynthesis</h3>
+                    <p class="text-muted mb-4">Learn how plants make their own food using sunlight</p>
+                    <a href="#photosynthesis" class="btn btn-primary stretched-link">Explore</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card science-topic-card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="topic-icon text-danger">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="h5">Human Body Systems</h3>
+                    <p class="text-muted mb-4">Discover how different body systems work together</p>
+                    <a href="#human-body" class="btn btn-primary stretched-link">Explore</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card science-topic-card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="topic-icon text-warning">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <h3 class="h5">Solar System</h3>
+                    <p class="text-muted mb-4">Learn about the planets, stars, and our place in space</p>
+                    <a href="#solar-system" class="btn btn-primary stretched-link">Explore</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5" id="photosynthesis" style="display: none;">
+        <div class="col-12 mb-3">
+            <a href="#topics-section" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="fas fa-arrow-left"></i> Back to Topics
+            </a>
+            <h2 class="h4">Plants & Photosynthesis</h2>
+            <hr>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">What is Photosynthesis?</h3>
+                </div>
+                <div class="card-body">
+                    <p>Photosynthesis is the process plants use to make their own food using sunlight. It's like a plant's way of cooking!</p>
+                    
+                    <div class="concept-diagram text-center">
+                        <img src="https://www.researchgate.net/publication/335993001/figure/fig1/AS:964135442112527@1606954245047/This-diagram-shows-the-process-of-photosynthesis-Arrows-represent-the-inputs-and-outputs.jpg" alt="Photosynthesis Diagram" class="img-fluid" style="max-height: 280px;">
+                        <p class="small text-muted mt-2">Diagram of the photosynthesis process</p>
+                    </div>
+                    
+                    <h4 class="h6 mt-4">Key Components:</h4>
+                    <ul>
+                        <li><strong>Sunlight</strong> - Energy source for the process</li>
+                        <li><strong>Carbon Dioxide</strong> - Gas from the air that plants absorb</li>
+                        <li><strong>Water</strong> - Absorbed through the roots</li>
+                        <li><strong>Chlorophyll</strong> - Green pigment that captures sunlight</li>
+                    </ul>
+                    
+                    <div class="fact-card mt-4">
+                        <h5 class="h6"><i class="fas fa-lightbulb text-warning"></i> Fun Fact</h5>
+                        <p class="mb-0">Plants produce oxygen as a waste product during photosynthesis. This oxygen is what humans and animals breathe!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm experiment-card">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Simple Experiment: Leaf Starch Test</h3>
+                </div>
+                <div class="card-body">
+                    <p>This experiment shows that leaves make food (starch) when they get sunlight.</p>
+                    
+                    <div class="concept-diagram text-center">
+                        <img src="https://www.thoughtco.com/thmb/4OMbclcnmvWlIIp-B-YuaL-nofI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/photosynthesis-experiment-56a12ace3df78cf7726817ff.jpg" alt="Leaf Starch Test" class="img-fluid">
+                        <p class="small text-muted mt-2">Leaf starch test experiment</p>
+                    </div>
+                    
+                    <h4 class="h6 mt-4">What You Need:</h4>
+                    <ul>
+                        <li>A healthy potted plant</li>
+                        <li>Black paper or aluminum foil</li>
+                        <li>Clips or tape</li>
+                        <li>Iodine solution (with adult help)</li>
+                    </ul>
+                    
+                    <h4 class="h6 mt-3">Steps:</h4>
+                    <ol>
+                        <li>Cover part of a leaf with black paper so no light can reach it</li>
+                        <li>Leave the plant in sunlight for 2-3 days</li>
+                        <li>Remove the paper and pick the leaf</li>
+                        <li>With adult help, test the leaf for starch using iodine</li>
+                    </ol>
+                    
+                    <p class="mt-3">The part that was covered will not change color with iodine (no starch), but the part that got sunlight will turn dark blue-black (contains starch).</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12 mt-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h3 class="h5 mb-0">Quick Quiz</h3>
+                </div>
+                <div class="card-body">
+                    <div class="quiz-question">
+                        <h5 class="h6 mb-3">1. What do plants need for photosynthesis?</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q1" id="q1-a">
+                            <label class="form-check-label" for="q1-a">
+                                Just water
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q1" id="q1-b">
+                            <label class="form-check-label" for="q1-b">
+                                Just sunlight
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q1" id="q1-c">
+                            <label class="form-check-label" for="q1-c">
+                                Sunlight, water, and carbon dioxide
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q1" id="q1-d">
+                            <label class="form-check-label" for="q1-d">
+                                Moonlight and soil
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <h5 class="h6 mb-3">2. What gas do plants release during photosynthesis?</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q2" id="q2-a">
+                            <label class="form-check-label" for="q2-a">
+                                Carbon dioxide
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q2" id="q2-b">
+                            <label class="form-check-label" for="q2-b">
+                                Oxygen
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q2" id="q2-c">
+                            <label class="form-check-label" for="q2-c">
+                                Nitrogen
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q2" id="q2-d">
+                            <label class="form-check-label" for="q2-d">
+                                Hydrogen
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <h5 class="h6 mb-3">3. What part of the plant is most important for photosynthesis?</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q3" id="q3-a">
+                            <label class="form-check-label" for="q3-a">
+                                Roots
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q3" id="q3-b">
+                            <label class="form-check-label" for="q3-b">
+                                Flowers
+                            </label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="q3" id="q3-c">
+                            <label class="form-check-label" for="q3-c">
+                                Leaves
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="q3" id="q3-d">
+                            <label class="form-check-label" for="q3-d">
+                                Stem
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
+                        <button class="btn btn-primary" id="check-answers-btn">
+                            Check Answers
+                        </button>
+                    </div>
+                    
+                    <div id="quiz-results" class="mt-4" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Topic navigation
+        const topicLinks = document.querySelectorAll('.science-topic-card a');
+        topicLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').slice(1);
+                
+                // Hide all topic sections
+                document.querySelectorAll('[id^="photosynthesis"], [id^="human-body"], [id^="solar-system"]').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Show selected topic
+                document.getElementById(targetId).style.display = 'flex';
+                document.getElementById('topics-section').style.display = 'none';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+        
+        // Back to topics
+        const backLinks = document.querySelectorAll('a[href="#topics-section"]');
+        backLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Hide all topic sections
+                document.querySelectorAll('[id^="photosynthesis"], [id^="human-body"], [id^="solar-system"]').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                // Show topics section
+                document.getElementById('topics-section').style.display = 'flex';
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            });
+        });
+        
+        // Quiz functionality
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        if (checkAnswersBtn) {
+            checkAnswersBtn.addEventListener('click', function() {
+                const quizResults = document.getElementById('quiz-results');
+                let correctAnswers = 0;
+                
+                // Check answers (correct answers are: q1-c, q2-b, q3-c)
+                if (document.getElementById('q1-c').checked) correctAnswers++;
+                if (document.getElementById('q2-b').checked) correctAnswers++;
+                if (document.getElementById('q3-c').checked) correctAnswers++;
+                
+                // Display results
+                let resultHtml = '';
+                if (correctAnswers === 3) {
+                    resultHtml = `
+                        <div class="alert alert-success">
+                            <h5><i class="fas fa-award"></i> Great job!</h5>
+                            <p>You got all ${correctAnswers} questions correct! You're a photosynthesis expert!</p>
+                        </div>
+                    `;
+                } else if (correctAnswers >= 1) {
+                    resultHtml = `
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-thumbs-up"></i> Good effort!</h5>
+                            <p>You got ${correctAnswers} out of 3 questions correct. Keep learning!</p>
+                            <p>Correct answers: 1-C, 2-B, 3-C</p>
+                        </div>
+                    `;
+                } else {
+                    resultHtml = `
+                        <div class="alert alert-warning">
+                            <h5><i class="fas fa-book"></i> Keep learning!</h5>
+                            <p>You got ${correctAnswers} out of 3 questions correct. Review the material and try again!</p>
+                            <p>Correct answers: 1-C, 2-B, 3-C</p>
+                        </div>
+                    `;
+                }
+                
+                quizResults.innerHTML = resultHtml;
+                quizResults.style.display = 'block';
+                quizResults.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+        
+        // Toggle between all topics and favorites
+        const allTopicsBtn = document.getElementById('all-topics-btn');
+        const favoritesBtn = document.getElementById('favorites-btn');
+        
+        if (allTopicsBtn && favoritesBtn) {
+            allTopicsBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                favoritesBtn.classList.remove('active');
+                // Here you would implement showing all topics
+            });
+            
+            favoritesBtn.addEventListener('click', function() {
+                this.classList.add('active');
+                allTopicsBtn.classList.remove('active');
+                // Here you would implement showing only favorites
+            });
+        }
+    });
+</script>
+{% endblock %}

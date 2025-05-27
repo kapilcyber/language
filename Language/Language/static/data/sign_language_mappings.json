@@ -1,0 +1,458 @@
+{
+  "en": {
+    "a": {
+      "type": "animation",
+      "word": "A",
+      "description": "The hand makes a fist with the thumb on the side. Only the thumb moves to the side of the index finger."
+    },
+    "b": {
+      "type": "animation",
+      "word": "B",
+      "description": "The hand is held up with the palm facing forward, the fingers extended and close together, and the thumb tucked against the palm."
+    },
+    "c": {
+      "type": "animation",
+      "word": "C",
+      "description": "The hand forms a 'C' shape with the fingers and thumb curved and separated."
+    },
+    "d": {
+      "type": "animation",
+      "word": "D",
+      "description": "The index finger points up with the other fingers and thumb curled into the palm."
+    },
+    "e": {
+      "type": "animation",
+      "word": "E",
+      "description": "The hand makes a claw-like shape with all fingers bent at the knuckles."
+    },
+    "f": {
+      "type": "animation",
+      "word": "F",
+      "description": "The index finger and thumb form a circle, with the other fingers extended upward."
+    },
+    "g": {
+      "type": "animation",
+      "word": "G",
+      "description": "The index finger and thumb form an 'L' shape, with the index finger pointing forward and the thumb pointing up."
+    },
+    "h": {
+      "type": "animation",
+      "word": "H",
+      "description": "The index and middle fingers are extended and held together, pointing forward."
+    },
+    "i": {
+      "type": "animation",
+      "word": "I",
+      "description": "The hand forms a fist with only the pinky finger extended upward."
+    },
+    "j": {
+      "type": "animation",
+      "word": "J",
+      "description": "The hand forms a fist with only the pinky finger extended, then draws a 'J' in the air."
+    },
+    "k": {
+      "type": "animation",
+      "word": "K",
+      "description": "The index and middle fingers are extended and separated, with the thumb touching the middle finger."
+    },
+    "l": {
+      "type": "animation",
+      "word": "L",
+      "description": "The index finger and thumb form an 'L' shape, with the index finger pointing up and the thumb pointing to the side."
+    },
+    "m": {
+      "type": "animation",
+      "word": "M",
+      "description": "The hand forms a fist with the thumb tucked between the ring and pinky fingers."
+    },
+    "n": {
+      "type": "animation",
+      "word": "N",
+      "description": "The hand forms a fist with the thumb tucked between the middle and ring fingers."
+    },
+    "o": {
+      "type": "animation",
+      "word": "O",
+      "description": "The fingers and thumb form a circle shape."
+    },
+    "p": {
+      "type": "animation",
+      "word": "P",
+      "description": "The index, middle, and thumb form a 'K' shape, and then the hand points downward."
+    },
+    "q": {
+      "type": "animation",
+      "word": "Q",
+      "description": "The index and thumb form a 'G' shape, and then the hand points downward."
+    },
+    "r": {
+      "type": "animation",
+      "word": "R",
+      "description": "The index and middle fingers are crossed with the thumb tucked in."
+    },
+    "s": {
+      "type": "animation",
+      "word": "S",
+      "description": "The hand forms a fist with the thumb wrapped over the fingers."
+    },
+    "t": {
+      "type": "animation",
+      "word": "T",
+      "description": "The hand forms a fist with the thumb between the index and middle fingers."
+    },
+    "u": {
+      "type": "animation",
+      "word": "U",
+      "description": "The index and middle fingers are extended and held together, pointing up."
+    },
+    "v": {
+      "type": "animation",
+      "word": "V",
+      "description": "The index and middle fingers form a 'V' shape, pointing up."
+    },
+    "w": {
+      "type": "animation",
+      "word": "W",
+      "description": "The index, middle, and ring fingers form a 'W' shape, pointing up."
+    },
+    "x": {
+      "type": "animation",
+      "word": "X",
+      "description": "The index finger is bent at the knuckle, forming a hook-like shape."
+    },
+    "y": {
+      "type": "animation",
+      "word": "Y",
+      "description": "The hand forms a fist with only the pinky and thumb extended, like a 'hang loose' gesture."
+    },
+    "z": {
+      "type": "animation",
+      "word": "Z",
+      "description": "The index finger traces a 'Z' in the air."
+    },
+    "0": {
+      "type": "animation",
+      "word": "0",
+      "description": "The fingers and thumb form a circle."
+    },
+    "1": {
+      "type": "animation",
+      "word": "1",
+      "description": "The index finger points up with the rest of the fingers and thumb folded."
+    },
+    "2": {
+      "type": "animation",
+      "word": "2",
+      "description": "The index and middle fingers are extended, forming a 'V'."
+    },
+    "3": {
+      "type": "animation",
+      "word": "3",
+      "description": "The thumb, index, and middle fingers are extended."
+    },
+    "4": {
+      "type": "animation",
+      "word": "4",
+      "description": "Four fingers are extended with the thumb folded."
+    },
+    "5": {
+      "type": "animation",
+      "word": "5",
+      "description": "All five fingers are extended, like a high five."
+    },
+    "6": {
+      "type": "animation",
+      "word": "6",
+      "description": "The thumb and pinky touch while the other fingers are extended."
+    },
+    "7": {
+      "type": "animation",
+      "word": "7",
+      "description": "The thumb, index, middle finger, and ring finger are extended."
+    },
+    "8": {
+      "type": "animation",
+      "word": "8",
+      "description": "The thumb, index, middle, ring, and pinky fingers form a specific shape."
+    },
+    "9": {
+      "type": "animation",
+      "word": "9",
+      "description": "The index finger is hooked and the other fingers are held down."
+    },
+    "hello": {
+      "type": "video",
+      "word": "Hello",
+      "description": "The hand starts near the forehead and moves outward, like a salute."
+    },
+    "thank you": {
+      "type": "video",
+      "word": "Thank You",
+      "description": "The flat hand starts at the chin and moves outward and down."
+    },
+    "please": {
+      "type": "video",
+      "word": "Please",
+      "description": "The flat hand rubs in a circular motion on the chest."
+    },
+    "yes": {
+      "type": "video",
+      "word": "Yes",
+      "description": "The hand forms a fist and nods up and down, like a head nodding."
+    },
+    "no": {
+      "type": "video",
+      "word": "No",
+      "description": "The index and middle fingers snap together against the thumb, like a mouth saying no."
+    },
+    "good": {
+      "type": "video",
+      "word": "Good",
+      "description": "The flat right hand starts with fingers touching the chin, then moves down and away from the body."
+    },
+    "bad": {
+      "type": "video",
+      "word": "Bad",
+      "description": "The flat right hand starts with fingers touching the chin, then moves down and away from the body with a negative facial expression."
+    },
+    "learn": {
+      "type": "video",
+      "word": "Learn",
+      "description": "The right hand, with fingers grouped and thumb extended, touches the forehead and then moves outward."
+    },
+    "school": {
+      "type": "video",
+      "word": "School",
+      "description": "The two 'S' hands (fists with thumbs wrapped over fingers) tap twice on top of each other."
+    },
+    "book": {
+      "type": "video",
+      "word": "Book",
+      "description": "The two hands open like a book, palms facing up."
+    },
+    "read": {
+      "type": "video",
+      "word": "Read",
+      "description": "The index and middle fingers of both hands move like scanning across a page."
+    },
+    "write": {
+      "type": "video",
+      "word": "Write",
+      "description": "The hand mimics holding a pen and writing on the palm of the other hand."
+    },
+    "math": {
+      "type": "video",
+      "word": "Math",
+      "description": "The index finger of the right hand taps on the forehead."
+    },
+    "science": {
+      "type": "video",
+      "word": "Science",
+      "description": "The fists with thumbs extended rotate around each other in front of the chest."
+    }
+  },
+  "gu": {
+    "a": {
+      "type": "animation",
+      "word": "અ",
+      "description": "Hand sign for Gujarati letter અ"
+    },
+    "b": {
+      "type": "animation",
+      "word": "બ",
+      "description": "Hand sign for Gujarati letter બ"
+    },
+    "c": {
+      "type": "animation",
+      "word": "ક",
+      "description": "Hand sign for Gujarati letter ક"
+    },
+    "d": {
+      "type": "animation",
+      "word": "ડ",
+      "description": "Hand sign for Gujarati letter ડ"
+    },
+    "0": {
+      "type": "animation",
+      "word": "૦",
+      "description": "Hand sign for Gujarati number ૦"
+    },
+    "1": {
+      "type": "animation",
+      "word": "૧",
+      "description": "Hand sign for Gujarati number ૧"
+    },
+    "2": {
+      "type": "animation",
+      "word": "૨",
+      "description": "Hand sign for Gujarati number ૨"
+    },
+    "3": {
+      "type": "animation",
+      "word": "૩",
+      "description": "Hand sign for Gujarati number ૩"
+    },
+    "4": {
+      "type": "animation",
+      "word": "૪",
+      "description": "Hand sign for Gujarati number ૪"
+    },
+    "5": {
+      "type": "animation",
+      "word": "૫",
+      "description": "Hand sign for Gujarati number ૫"
+    },
+    "hello": {
+      "type": "video",
+      "word": "નમસ્તે",
+      "description": "Hand sign for Gujarati greeting નમસ્તે"
+    },
+    "thank you": {
+      "type": "video",
+      "word": "આભાર",
+      "description": "Hand sign for Gujarati phrase આભાર"
+    },
+    "please": {
+      "type": "video",
+      "word": "કૃપા કરીને",
+      "description": "Hand sign for Gujarati phrase કૃપા કરીને"
+    },
+    "yes": {
+      "type": "video",
+      "word": "હા",
+      "description": "Hand sign for Gujarati word હા"
+    },
+    "no": {
+      "type": "video",
+      "word": "ના",
+      "description": "Hand sign for Gujarati word ના"
+    },
+    "good": {
+      "type": "video",
+      "word": "સારું",
+      "description": "Hand sign for Gujarati word સારું"
+    },
+    "bad": {
+      "type": "video",
+      "word": "ખરાબ",
+      "description": "Hand sign for Gujarati word ખરાબ"
+    },
+    "learn": {
+      "type": "video",
+      "word": "શીખવું",
+      "description": "Hand sign for Gujarati word શીખવું"
+    },
+    "school": {
+      "type": "video",
+      "word": "શાળા",
+      "description": "Hand sign for Gujarati word શાળા"
+    },
+    "book": {
+      "type": "video",
+      "word": "પુસ્તક",
+      "description": "Hand sign for Gujarati word પુસ્તક"
+    }
+  },
+  "hi": {
+    "a": {
+      "type": "animation",
+      "word": "अ",
+      "description": "Hand sign for Hindi letter अ"
+    },
+    "b": {
+      "type": "animation",
+      "word": "ब",
+      "description": "Hand sign for Hindi letter ब"
+    },
+    "c": {
+      "type": "animation",
+      "word": "क",
+      "description": "Hand sign for Hindi letter क"
+    },
+    "d": {
+      "type": "animation",
+      "word": "ड",
+      "description": "Hand sign for Hindi letter ड"
+    },
+    "0": {
+      "type": "animation",
+      "word": "०",
+      "description": "Hand sign for Hindi number ०"
+    },
+    "1": {
+      "type": "animation",
+      "word": "१",
+      "description": "Hand sign for Hindi number १"
+    },
+    "2": {
+      "type": "animation",
+      "word": "२",
+      "description": "Hand sign for Hindi number २"
+    },
+    "3": {
+      "type": "animation",
+      "word": "३",
+      "description": "Hand sign for Hindi number ३"
+    },
+    "4": {
+      "type": "animation",
+      "word": "४",
+      "description": "Hand sign for Hindi number ४"
+    },
+    "5": {
+      "type": "animation",
+      "word": "५",
+      "description": "Hand sign for Hindi number ५"
+    },
+    "hello": {
+      "type": "video",
+      "word": "नमस्ते",
+      "description": "Hand sign for Hindi greeting नमस्ते"
+    },
+    "thank you": {
+      "type": "video",
+      "word": "धन्यवाद",
+      "description": "Hand sign for Hindi phrase धन्यवाद"
+    },
+    "please": {
+      "type": "video",
+      "word": "कृपया",
+      "description": "Hand sign for Hindi word कृपया"
+    },
+    "yes": {
+      "type": "video",
+      "word": "हां",
+      "description": "Hand sign for Hindi word हां"
+    },
+    "no": {
+      "type": "video",
+      "word": "नहीं",
+      "description": "Hand sign for Hindi word नहीं"
+    },
+    "good": {
+      "type": "video",
+      "word": "अच्छा",
+      "description": "Hand sign for Hindi word अच्छा"
+    },
+    "bad": {
+      "type": "video",
+      "word": "बुरा",
+      "description": "Hand sign for Hindi word बुरा"
+    },
+    "learn": {
+      "type": "video",
+      "word": "सीखना",
+      "description": "Hand sign for Hindi word सीखना"
+    },
+    "school": {
+      "type": "video",
+      "word": "स्कूल",
+      "description": "Hand sign for Hindi word स्कूल"
+    },
+    "book": {
+      "type": "video",
+      "word": "किताब",
+      "description": "Hand sign for Hindi word किताब"
+    }
+  }
+}

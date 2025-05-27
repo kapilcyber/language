@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+
+{% block title %}Alphabet Learning - Inclusive Learning App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .alphabet-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .alphabet-item {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem 1rem;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    
+    .alphabet-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .alphabet-letter {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .alphabet-sign {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 0.5rem;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .alphabet-sign i {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+    
+    .alphabet-sound {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    
+    .alphabet-example {
+        font-style: italic;
+        font-size: 0.9rem;
+    }
+    
+    .letter-detail {
+        display: none;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .letter-detail-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+    }
+    
+    .letter-detail-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+    
+    .letter-detail-sign {
+        flex: 1;
+        min-width: 250px;
+        text-align: center;
+    }
+    
+    .letter-detail-info {
+        flex: 2;
+        min-width: 300px;
+    }
+    
+    .letter-detail-examples {
+        margin-top: 1rem;
+    }
+    
+    .letter-detail-examples ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    
+    .letter-detail-examples li {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+    }
+    
+    .letter-detail-sign-image {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1rem;
+        background-color: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .letter-detail-sign-image i {
+        font-size: 5rem;
+        color: var(--primary-color);
+    }
+    
+    .language-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .language-tab {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .language-tab.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .writing-practice {
+        margin-top: 2rem;
+    }
+    
+    .practice-pad {
+        width: 100%;
+        height: 300px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .alphabet-grid {
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        }
+        
+        .alphabet-letter {
+            font-size: 2.5rem;
+        }
+        
+        .letter-detail-content {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('modules_by_category', category='alphabet') }}">Alphabet</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ module.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="module-header mb-4">
+        <h1>{{ module.name }}</h1>
+        <p class="lead">{{ module.description }}</p>
+    </div>
+    
+    <!-- Language Tabs -->
+    <div class="language-tabs">
+        <div class="language-tab active" data-language="current">
+            {% if current_user.is_authenticated %}
+                {{ get_language_name(current_user.preferred_language) }}
+            {% else %}
+                {{ get_language_name(session.get('language', 'en')) }}
+            {% endif %}
+        </div>
+        <div class="language-tab" data-language="en">English</div>
+        <div class="language-tab" data-language="gu">ગુજરાતી</div>
+        <div class="language-tab" data-language="hi">हिंदी</div>
+    </div>
+    
+    <!-- Letter Detail View (Initially Hidden) -->
+    <div id="letter-detail" class="letter-detail">
+        <div class="letter-detail-close" id="letter-detail-close">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="letter-detail-content">
+            <div class="letter-detail-sign">
+                <div class="letter-detail-sign-image">
+                    <i class="fas fa-hands"></i>
+                </div>
+                <button class="btn btn-sm btn-primary mt-2">
+                    <i class="fas fa-play me-1"></i> Play Sign Animation
+                </button>
+            </div>
+            <div class="letter-detail-info">
+                <h2 id="detail-letter-title" class="mb-3">Letter</h2>
+                <p id="detail-letter-description">Description of how to form this letter in sign language.</p>
+                
+                <div class="letter-detail-examples">
+                    <h3 class="h5">Examples</h3>
+                    <ul id="detail-examples-list">
+                        <!-- Examples will be populated dynamically -->
+                    </ul>
+                </div>
+                
+                <div class="writing-practice">
+                    <h3 class="h5">Practice Writing</h3>
+                    <canvas id="practice-pad" class="practice-pad"></canvas>
+                    <div class="d-flex justify-content-between">
+                        <button id="clear-pad" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-eraser me-1"></i> Clear
+                        </button>
+                        <button id="check-writing" class="btn btn-sm btn-primary">
+                            <i class="fas fa-check me-1"></i> Check My Writing
+                        </button>
+                    </div>
+                    <div id="writing-feedback" class="mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Display letters based on selected language -->
+    <div class="alphabet-container">
+        <!-- English Alphabet (Default) -->
+        <div class="alphabet-content" data-language="en">
+            <div class="alphabet-grid">
+                {% for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ" %}
+                    <div class="alphabet-item" data-letter="{{ letter }}" data-language="en">
+                        <div class="alphabet-letter">{{ letter }}</div>
+                        <div class="alphabet-sign">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                        <div class="alphabet-sound">{{ letter }}, {{ letter.lower() }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Gujarati Alphabet -->
+        <div class="alphabet-content" data-language="gu" style="display: none;">
+            <div class="alphabet-grid">
+                {% for letter in "અઆઇઈઉઊઋઍએઐઑઓઔકખગઘઙચછજઝઞટઠડઢણતથદધનપફબભમયરલવશષસહળક્ષજ્ઞ" %}
+                    <div class="alphabet-item" data-letter="{{ letter }}" data-language="gu">
+                        <div class="alphabet-letter">{{ letter }}</div>
+                        <div class="alphabet-sign">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Hindi Alphabet -->
+        <div class="alphabet-content" data-language="hi" style="display: none;">
+            <div class="alphabet-grid">
+                {% for letter in "अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसहक्षत्रज्ञ" %}
+                    <div class="alphabet-item" data-letter="{{ letter }}" data-language="hi">
+                        <div class="alphabet-letter">{{ letter }}</div>
+                        <div class="alphabet-sign">
+                            <i class="fas fa-hands"></i>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lessons List -->
+    {% if lessons %}
+        <div class="lessons-section mt-5">
+            <h2 class="h3 mb-3">Lessons</h2>
+            <div class="list-group">
+                {% for lesson in lessons %}
+                    <a href="{{ url_for('lesson_detail', module_slug=module.slug, lesson_slug=lesson.slug) }}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="h5 mb-1">{{ lesson.name }}</h3>
+                            <p class="mb-1 text-muted">{{ lesson.content[:100] + '...' if lesson.content and lesson.content|length > 100 else lesson.content }}</p>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/writing_pad.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language tab switching
+        const languageTabs = document.querySelectorAll('.language-tab');
+        const alphabetContents = document.querySelectorAll('.alphabet-content');
+        
+        languageTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const language = this.getAttribute('data-language');
+                
+                // Update active tab
+                languageTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding content
+                alphabetContents.forEach(content => {
+                    const contentLang = content.getAttribute('data-language');
+                    
+                    if (contentLang === language || (language === 'current' && contentLang === '{{ current_user.preferred_language if current_user.is_authenticated else session.get("language", "en") }}')) {
+                        content.style.display = 'block';
+                    } else {
+                        content.style.display = 'none';
+                    }
+                });
+                
+                // Hide letter detail when switching languages
+                document.getElementById('letter-detail').style.display = 'none';
+            });
+        });
+        
+        // Letter detail view
+        const letterItems = document.querySelectorAll('.alphabet-item');
+        const letterDetail = document.getElementById('letter-detail');
+        const letterDetailClose = document.getElementById('letter-detail-close');
+        const detailLetterTitle = document.getElementById('detail-letter-title');
+        const detailLetterDescription = document.getElementById('detail-letter-description');
+        const detailExamplesList = document.getElementById('detail-examples-list');
+        
+        letterItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const letter = this.getAttribute('data-letter');
+                const language = this.getAttribute('data-language');
+                
+                // Set letter detail content
+                detailLetterTitle.textContent = `Letter ${letter}`;
+                
+                // Example descriptions based on language
+                if (language === 'en') {
+                    detailLetterDescription.textContent = `The sign for the letter "${letter}" is formed by...`;
+                    
+                    // Example words starting with this letter (English)
+                    const examples = getExamplesForLetter(letter, language);
+                    detailExamplesList.innerHTML = examples.map(example => 
+                        `<li><strong>${example.word}</strong> - ${example.meaning}</li>`
+                    ).join('');
+                    
+                } else if (language === 'gu') {
+                    detailLetterDescription.textContent = `"${letter}" અક્ષર માટે સંકેત બનાવવામાં આવે છે...`;
+                    
+                    // Example words for Gujarati
+                    const examples = getExamplesForLetter(letter, language);
+                    detailExamplesList.innerHTML = examples.map(example => 
+                        `<li><strong>${example.word}</strong> - ${example.meaning}</li>`
+                    ).join('');
+                    
+                } else if (language === 'hi') {
+                    detailLetterDescription.textContent = `"${letter}" अक्षर के लिए संकेत बनाया जाता है...`;
+                    
+                    // Example words for Hindi
+                    const examples = getExamplesForLetter(letter, language);
+                    detailExamplesList.innerHTML = examples.map(example => 
+                        `<li><strong>${example.word}</strong> - ${example.meaning}</li>`
+                    ).join('');
+                }
+                
+                // Show letter detail
+                letterDetail.style.display = 'block';
+                
+                // Scroll to detail view
+                letterDetail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        
+        // Close letter detail
+        letterDetailClose.addEventListener('click', function() {
+            letterDetail.style.display = 'none';
+        });
+        
+        // Writing practice feedback
+        const checkWritingBtn = document.getElementById('check-writing');
+        const writingFeedback = document.getElementById('writing-feedback');
+        
+        if (checkWritingBtn) {
+            checkWritingBtn.addEventListener('click', function() {
+                // Simulate recognition feedback
+                writingFeedback.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> Great job! Your handwriting is improving.
+                    </div>
+                `;
+                writingFeedback.style.display = 'block';
+            });
+        }
+        
+        // Helper function to get example words for a letter
+        function getExamplesForLetter(letter, language) {
+            // Example data (in a real app this would come from the database)
+            const examplesByLanguage = {
+                'en': {
+                    'A': [
+                        { word: 'Apple', meaning: 'A fruit' },
+                        { word: 'Astronaut', meaning: 'A person who travels in space' }
+                    ],
+                    'B': [
+                        { word: 'Ball', meaning: 'A round toy' },
+                        { word: 'Banana', meaning: 'A yellow fruit' }
+                    ],
+                    // More examples...
+                },
+                'gu': {
+                    'અ': [
+                        { word: 'અનાજ', meaning: 'Grains' },
+                        { word: 'અંબોડો', meaning: 'Hair bun' }
+                    ],
+                    // More examples...
+                },
+                'hi': {
+                    'अ': [
+                        { word: 'अनार', meaning: 'Pomegranate' },
+                        { word: 'अंगूर', meaning: 'Grapes' }
+                    ],
+                    // More examples...
+                }
+            };
+            
+            // Return examples for the given letter and language or a default message
+            return examplesByLanguage[language] && examplesByLanguage[language][letter] 
+                ? examplesByLanguage[language][letter] 
+                : [{ word: `Example with ${letter}`, meaning: 'Example meaning' }];
+        }
+    });
+</script>
+{% endblock %}

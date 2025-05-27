@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Speech to Sign Language - Inclusive Learning App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .converter-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .converter-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .microphone-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        margin: 1rem 0;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+    }
+    
+    .microphone-button {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: none;
+        background-color: var(--primary-color);
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .microphone-button:hover {
+        transform: scale(1.05);
+        background-color: var(--primary-color-dark);
+    }
+    
+    .microphone-button.recording {
+        animation: pulse 1.5s infinite;
+        background-color: #dc3545;
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        70% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 15px rgba(220, 53, 69, 0);
+        }
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+    
+    .microphone-status {
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .recognized-text {
+        width: 100%;
+        padding: 1rem;
+        margin-top: 1rem;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        min-height: 100px;
+    }
+    
+    .sign-output {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .sign-item {
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        width: 150px;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    
+    .sign-image {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .sign-image i {
+        font-size: 3rem;
+        color: var(--primary-color);
+    }
+    
+    .sign-text {
+        font-weight: bold;
+    }
+    
+    .error-message {
+        padding: 1rem;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: var(--border-radius);
+        color: #721c24;
+        margin-top: 1rem;
+        display: none;
+    }
+    
+    .loading {
+        display: none;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .loading i {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item">Tools</li>
+            <li class="breadcrumb-item active" aria-current="page">Speech to Sign</li>
+        </ol>
+    </nav>
+    
+    <div class="converter-container">
+        <div class="converter-header">
+            <h1>Speech to Sign Language Converter</h1>
+            <p class="lead">Speak and convert your speech into sign language representations</p>
+        </div>
+        
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="microphone-area">
+                    <button id="record-button" class="microphone-button">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <div id="recording-status" class="microphone-status">Click to start recording</div>
+                    <p class="text-muted">Speak clearly into your microphone</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="language-select" class="form-label">Select language</label>
+                    <select id="language-select" class="form-select">
+                        <option value="en" selected>English</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                    </select>
+                </div>
+                
+                <div class="mt-3">
+                    <label class="form-label">Recognized Text:</label>
+                    <div id="recognized-text" class="recognized-text">Your speech will appear here...</div>
+                </div>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <button id="convert-button" class="btn btn-primary">
+                        <i class="fas fa-sign-language me-1"></i> Convert to Sign Language
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="browser-support" class="alert alert-warning mt-3" style="display: none;">
+            <i class="fas fa-exclamation-triangle me-1"></i> 
+            Your browser doesn't support speech recognition. Please use Chrome, Edge, or Safari for the best experience.
+        </div>
+        
+        <div id="loading" class="loading">
+            <i class="fas fa-circle-notch fa-spin me-1"></i> Converting speech to sign language...
+        </div>
+        
+        <div id="error-message" class="error-message"></div>
+        
+        <div id="sign-output" class="sign-output"></div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3 class="h5 mb-0">About This Tool</h3>
+        </div>
+        <div class="card-body">
+            <p>The Speech to Sign Language converter uses your device's microphone to convert spoken words into visual sign language representations. This tool is designed to help:</p>
+            <ul>
+                <li>Create a bridge between spoken and sign language</li>
+                <li>Assist in real-time communication between hearing and deaf individuals</li>
+                <li>Support classroom learning with instant speech-to-sign conversion</li>
+                <li>Allow students to practice pronunciation and receive sign language feedback</li>
+            </ul>
+            <p><strong>Note:</strong> For the best experience, use Chrome or Edge browsers, and ensure you grant microphone permissions when prompted.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/speech_to_sign.js') }}"></script>
+{% endblock %}

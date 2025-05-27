@@ -1,0 +1,133 @@
+{
+  "app": {
+    "name": "Inclusive Learning App",
+    "tagline": "Empowering deaf and mute students through inclusive education"
+  },
+  "nav": {
+    "home": "Home",
+    "login": "Login",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "modules": "Learning Modules",
+    "tools": "Learning Tools",
+    "logout": "Logout",
+    "profile": "Profile"
+  },
+  "languages": {
+    "en": "English",
+    "gu": "Gujarati",
+    "hi": "Hindi"
+  },
+  "home": {
+    "welcome": "Welcome to Inclusive Learning",
+    "intro": "A platform designed for deaf and mute students to learn through sign language and visual content",
+    "get_started": "Get Started",
+    "browse_modules": "Browse Modules",
+    "features": "Key Features",
+    "feature_1_title": "Multilingual Support",
+    "feature_1_desc": "Content available in English, Gujarati, and Hindi",
+    "feature_2_title": "Sign Language Integration",
+    "feature_2_desc": "Learn with Indian Sign Language (ISL) support",
+    "feature_3_title": "Interactive Learning",
+    "feature_3_desc": "Practice with writing pad, quizzes and interactive content",
+    "feature_4_title": "Conversion Tools",
+    "feature_4_desc": "Text to Sign and Speech to Sign conversion tools",
+    "modules_heading": "Learning Modules",
+    "tools_heading": "Learning Tools"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "role": "Role",
+    "student": "Student",
+    "teacher": "Teacher",
+    "parent": "Parent",
+    "preferred_language": "Preferred Language",
+    "already_registered": "Already registered?",
+    "no_account": "Don't have an account?",
+    "register_now": "Register now",
+    "login_now": "Login now",
+    "submit": "Submit",
+    "remember_me": "Remember Me"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "my_progress": "My Progress",
+    "recent_activity": "Recent Activity",
+    "my_students": "My Students",
+    "my_children": "My Children",
+    "completed_modules": "Completed Modules",
+    "in_progress_modules": "In Progress",
+    "quiz_results": "Quiz Results",
+    "stats": "Learning Statistics",
+    "total_time": "Total Learning Time",
+    "accuracy": "Quiz Accuracy",
+    "streak": "Current Streak",
+    "view_all": "View All"
+  },
+  "modules": {
+    "alphabet": "Alphabet",
+    "numbers": "Numbers",
+    "words": "Words & Vocabulary",
+    "sentences": "Sentences & Phrases",
+    "math": "Mathematics",
+    "science": "Science Concepts",
+    "start_learning": "Start Learning",
+    "continue_learning": "Continue Learning",
+    "progress": "Progress",
+    "lessons": "Lessons",
+    "quizzes": "Quizzes",
+    "take_quiz": "Take Quiz",
+    "completed": "Completed",
+    "in_progress": "In Progress",
+    "not_started": "Not Started"
+  },
+  "tools": {
+    "text_to_sign": "Text to Sign Language",
+    "speech_to_sign": "Speech to Sign Language",
+    "writing_pad": "Practice Writing Pad",
+    "enter_text": "Enter text to convert",
+    "start_speaking": "Start Speaking",
+    "stop_speaking": "Stop Speaking",
+    "convert": "Convert",
+    "clear": "Clear",
+    "select_language": "Select Language",
+    "result": "Result"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "question": "Question",
+    "of": "of",
+    "time": "Time",
+    "submit_quiz": "Submit Quiz",
+    "next": "Next",
+    "previous": "Previous",
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "your_score": "Your Score",
+    "try_again": "Try Again",
+    "congratulations": "Congratulations!",
+    "completed_quiz": "You have completed this quiz"
+  },
+  "errors": {
+    "page_not_found": "Page Not Found",
+    "page_not_found_message": "The page you are looking for does not exist.",
+    "go_home": "Go to Home",
+    "server_error": "Server Error",
+    "server_error_message": "Something went wrong on our end. Please try again later."
+  },
+  "footer": {
+    "about": "About Us",
+    "about_text": "We are dedicated to creating inclusive learning experiences for deaf and mute students.",
+    "contact": "Contact Us",
+    "resources": "Resources",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "accessibility": "Accessibility",
+    "copyright": "© 2023 Inclusive Learning App. All rights reserved."
+  }
+}

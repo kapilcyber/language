@@ -1,0 +1,1223 @@
+{% extends "base.html" %}
+
+{% block title %}Words & Vocabulary - Inclusive Learning App{% endblock %}
+
+{% block extra_css %}
+<style>
+    .word-categories {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .category-badge {
+        padding: 0.5rem 1rem;
+        background-color: var(--light-color);
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .category-badge.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .words-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .word-card {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 1.5rem;
+        text-align: center;
+        transition: var(--transition);
+        cursor: pointer;
+    }
+    
+    .word-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .word-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+    }
+    
+    .word-translation {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+    
+    .word-sign {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .word-sign i {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+    
+    .word-detail {
+        display: none;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+    
+    .word-detail-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+    }
+    
+    .word-detail-content {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+    
+    .word-detail-sign {
+        flex: 1;
+        min-width: 250px;
+        text-align: center;
+    }
+    
+    .word-detail-info {
+        flex: 2;
+        min-width: 300px;
+    }
+    
+    .word-detail-examples {
+        margin-top: 1.5rem;
+    }
+    
+    .word-detail-sign-image {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 1rem;
+        background-color: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .word-detail-sign-image i {
+        font-size: 5rem;
+        color: var(--primary-color);
+    }
+    
+    .word-detail-pronunciation {
+        margin-bottom: 1rem;
+        font-style: italic;
+        color: #666;
+    }
+    
+    .language-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .language-tab {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    
+    .language-tab.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .practice-section {
+        margin-top: 3rem;
+        padding: 2rem;
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .matching-game {
+        margin-top: 2rem;
+    }
+    
+    .matching-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .matching-card {
+        aspect-ratio: 1;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        cursor: pointer;
+        transition: var(--transition);
+        transform-style: preserve-3d;
+        position: relative;
+    }
+    
+    .matching-card.flipped {
+        transform: rotateY(180deg);
+    }
+    
+    .card-front, .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--border-radius);
+    }
+    
+    .card-front {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .card-back {
+        background-color: white;
+        transform: rotateY(180deg);
+    }
+    
+    .card-back.word {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+    
+    .card-back.sign {
+        font-size: 2rem;
+        color: var(--secondary-color);
+    }
+    
+    .game-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .sentence-practice {
+        margin-top: 2rem;
+    }
+    
+    .sentence-builder {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1.5rem 0;
+        min-height: 50px;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: var(--border-radius);
+        border: 1px dashed #ddd;
+    }
+    
+    .sentence-word {
+        padding: 0.5rem 1rem;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        cursor: move;
+    }
+    
+    .word-bank {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .word-detail-content {
+            flex-direction: column;
+        }
+        
+        .matching-cards {
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('modules_by_category', category='words') }}">Words</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ module.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="module-header mb-4">
+        <h1>{{ module.name }}</h1>
+        <p class="lead">{{ module.description }}</p>
+    </div>
+    
+    <!-- Language Tabs -->
+    <div class="language-tabs">
+        <div class="language-tab active" data-language="current">
+            {% if current_user.is_authenticated %}
+                {{ get_language_name(current_user.preferred_language) }}
+            {% else %}
+                {{ get_language_name(session.get('language', 'en')) }}
+            {% endif %}
+        </div>
+        <div class="language-tab" data-language="en">English</div>
+        <div class="language-tab" data-language="gu">ગુજરાતી</div>
+        <div class="language-tab" data-language="hi">हिंदी</div>
+    </div>
+    
+    <!-- Word Categories Filter -->
+    <div class="word-categories">
+        <div class="category-badge active" data-category="all">All</div>
+        <div class="category-badge" data-category="greetings">Greetings</div>
+        <div class="category-badge" data-category="family">Family</div>
+        <div class="category-badge" data-category="food">Food</div>
+        <div class="category-badge" data-category="animals">Animals</div>
+        <div class="category-badge" data-category="colors">Colors</div>
+        <div class="category-badge" data-category="emotions">Emotions</div>
+    </div>
+    
+    <!-- Word Detail View (Initially Hidden) -->
+    <div id="word-detail" class="word-detail">
+        <div class="word-detail-close" id="word-detail-close">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="word-detail-content">
+            <div class="word-detail-sign">
+                <div class="word-detail-sign-image">
+                    <i class="fas fa-hands"></i>
+                </div>
+                <button class="btn btn-sm btn-primary mt-2">
+                    <i class="fas fa-play me-1"></i> Play Sign Animation
+                </button>
+            </div>
+            <div class="word-detail-info">
+                <h2 id="detail-word-title" class="mb-2">Word</h2>
+                <div id="detail-word-pronunciation" class="word-detail-pronunciation">Pronunciation guide</div>
+                
+                <p id="detail-word-description">Description of how to form this word in sign language.</p>
+                
+                <div class="word-detail-examples">
+                    <h3 class="h5">Example Sentences</h3>
+                    <ul id="detail-examples-list" class="list-group">
+                        <!-- Examples will be populated dynamically -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Display words based on selected language and category -->
+    <div class="words-container">
+        <!-- English Words (Default) -->
+        <div class="words-content" data-language="en">
+            <div class="words-list">
+                <!-- Greetings -->
+                <div class="word-card" data-word="Hello" data-category="greetings" data-language="en">
+                    <div class="word-text">Hello</div>
+                    <div class="word-translation">Greeting</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Goodbye" data-category="greetings" data-language="en">
+                    <div class="word-text">Goodbye</div>
+                    <div class="word-translation">Greeting</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Thank you" data-category="greetings" data-language="en">
+                    <div class="word-text">Thank you</div>
+                    <div class="word-translation">Gratitude</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Family -->
+                <div class="word-card" data-word="Mother" data-category="family" data-language="en">
+                    <div class="word-text">Mother</div>
+                    <div class="word-translation">Family member</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Father" data-category="family" data-language="en">
+                    <div class="word-text">Father</div>
+                    <div class="word-translation">Family member</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Food -->
+                <div class="word-card" data-word="Water" data-category="food" data-language="en">
+                    <div class="word-text">Water</div>
+                    <div class="word-translation">Drink</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Apple" data-category="food" data-language="en">
+                    <div class="word-text">Apple</div>
+                    <div class="word-translation">Fruit</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Animals -->
+                <div class="word-card" data-word="Dog" data-category="animals" data-language="en">
+                    <div class="word-text">Dog</div>
+                    <div class="word-translation">Animal</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Cat" data-category="animals" data-language="en">
+                    <div class="word-text">Cat</div>
+                    <div class="word-translation">Animal</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Colors -->
+                <div class="word-card" data-word="Red" data-category="colors" data-language="en">
+                    <div class="word-text">Red</div>
+                    <div class="word-translation">Color</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Blue" data-category="colors" data-language="en">
+                    <div class="word-text">Blue</div>
+                    <div class="word-translation">Color</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Emotions -->
+                <div class="word-card" data-word="Happy" data-category="emotions" data-language="en">
+                    <div class="word-text">Happy</div>
+                    <div class="word-translation">Emotion</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="Sad" data-category="emotions" data-language="en">
+                    <div class="word-text">Sad</div>
+                    <div class="word-translation">Emotion</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gujarati Words -->
+        <div class="words-content" data-language="gu" style="display: none;">
+            <div class="words-list">
+                <!-- Greetings -->
+                <div class="word-card" data-word="નમસ્તે" data-category="greetings" data-language="gu">
+                    <div class="word-text">નમસ્તે</div>
+                    <div class="word-translation">અભિવાદન</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="આવજો" data-category="greetings" data-language="gu">
+                    <div class="word-text">આવજો</div>
+                    <div class="word-translation">અભિવાદન</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Family -->
+                <div class="word-card" data-word="માતા" data-category="family" data-language="gu">
+                    <div class="word-text">માતા</div>
+                    <div class="word-translation">પરિવારના સભ્ય</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="પિતા" data-category="family" data-language="gu">
+                    <div class="word-text">પિતા</div>
+                    <div class="word-translation">પરિવારના સભ્ય</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- More Gujarati words for other categories -->
+            </div>
+        </div>
+        
+        <!-- Hindi Words -->
+        <div class="words-content" data-language="hi" style="display: none;">
+            <div class="words-list">
+                <!-- Greetings -->
+                <div class="word-card" data-word="नमस्ते" data-category="greetings" data-language="hi">
+                    <div class="word-text">नमस्ते</div>
+                    <div class="word-translation">अभिवादन</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="अलविदा" data-category="greetings" data-language="hi">
+                    <div class="word-text">अलविदा</div>
+                    <div class="word-translation">अभिवादन</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- Family -->
+                <div class="word-card" data-word="माता" data-category="family" data-language="hi">
+                    <div class="word-text">माता</div>
+                    <div class="word-translation">परिवार के सदस्य</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <div class="word-card" data-word="पिता" data-category="family" data-language="hi">
+                    <div class="word-text">पिता</div>
+                    <div class="word-translation">परिवार के सदस्य</div>
+                    <div class="word-sign">
+                        <i class="fas fa-hands"></i>
+                    </div>
+                </div>
+                
+                <!-- More Hindi words for other categories -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Practice Section -->
+    <div class="practice-section">
+        <h2 class="h3 text-center">Practice Activities</h2>
+        
+        <!-- Matching Game -->
+        <div class="matching-game">
+            <h3 class="h4">Word Matching Game</h3>
+            <p>Match the words with their sign language representations.</p>
+            
+            <div class="matching-cards" id="matching-cards">
+                <!-- Cards will be generated dynamically -->
+            </div>
+            
+            <div class="game-controls">
+                <button id="new-game" class="btn btn-primary">
+                    <i class="fas fa-sync-alt me-1"></i> New Game
+                </button>
+            </div>
+        </div>
+        
+        <!-- Sentence Building Exercise -->
+        <div class="sentence-practice mt-5">
+            <h3 class="h4">Sentence Building</h3>
+            <p>Drag and drop the words to form a correct sentence.</p>
+            
+            <div id="sentence-exercise">
+                <div class="mb-2">
+                    <strong>Form the sentence:</strong> <span id="target-sentence">I am learning sign language.</span>
+                </div>
+                
+                <div id="sentence-builder" class="sentence-builder"></div>
+                
+                <div id="word-bank" class="word-bank">
+                    <!-- Words will be generated dynamically -->
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <button id="check-sentence" class="btn btn-primary">
+                        <i class="fas fa-check me-1"></i> Check Sentence
+                    </button>
+                    <button id="new-sentence" class="btn btn-outline-secondary">
+                        <i class="fas fa-sync-alt me-1"></i> New Sentence
+                    </button>
+                </div>
+                
+                <div id="sentence-feedback" class="mt-3" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Lessons List -->
+    {% if lessons %}
+        <div class="lessons-section mt-5">
+            <h2 class="h3 mb-3">Lessons</h2>
+            <div class="list-group">
+                {% for lesson in lessons %}
+                    <a href="{{ url_for('lesson_detail', module_slug=module.slug, lesson_slug=lesson.slug) }}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="h5 mb-1">{{ lesson.name }}</h3>
+                            <p class="mb-1 text-muted">{{ lesson.content[:100] + '...' if lesson.content and lesson.content|length > 100 else lesson.content }}</p>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language tab switching
+        const languageTabs = document.querySelectorAll('.language-tab');
+        const wordsContents = document.querySelectorAll('.words-content');
+        
+        languageTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const language = this.getAttribute('data-language');
+                
+                // Update active tab
+                languageTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding content
+                wordsContents.forEach(content => {
+                    const contentLang = content.getAttribute('data-language');
+                    
+                    if (contentLang === language || (language === 'current' && contentLang === '{{ current_user.preferred_language if current_user.is_authenticated else session.get("language", "en") }}')) {
+                        content.style.display = 'block';
+                    } else {
+                        content.style.display = 'none';
+                    }
+                });
+                
+                // Hide word detail when switching languages
+                document.getElementById('word-detail').style.display = 'none';
+                
+                // Reset category filter
+                const categoryBadges = document.querySelectorAll('.category-badge');
+                categoryBadges.forEach(badge => badge.classList.remove('active'));
+                document.querySelector('.category-badge[data-category="all"]').classList.add('active');
+                
+                // Show all words for the selected language
+                const visibleWordCards = document.querySelectorAll(`.words-content[data-language="${contentLang}"] .word-card`);
+                visibleWordCards.forEach(card => card.style.display = 'block');
+                
+                // Reset matching game
+                startNewGame();
+            });
+        });
+        
+        // Category filtering
+        const categoryBadges = document.querySelectorAll('.category-badge');
+        
+        categoryBadges.forEach(badge => {
+            badge.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                
+                // Update active badge
+                categoryBadges.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Get current active language
+                const activeLanguage = document.querySelector('.language-tab.active').getAttribute('data-language');
+                let languageCode = activeLanguage;
+                
+                if (activeLanguage === 'current') {
+                    languageCode = '{{ current_user.preferred_language if current_user.is_authenticated else session.get("language", "en") }}';
+                }
+                
+                // Filter word cards
+                const wordCards = document.querySelectorAll(`.words-content[data-language="${languageCode}"] .word-card`);
+                
+                wordCards.forEach(card => {
+                    const cardCategory = card.getAttribute('data-category');
+                    
+                    if (category === 'all' || cardCategory === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // Word detail view
+        const wordCards = document.querySelectorAll('.word-card');
+        const wordDetail = document.getElementById('word-detail');
+        const wordDetailClose = document.getElementById('word-detail-close');
+        const detailWordTitle = document.getElementById('detail-word-title');
+        const detailWordPronunciation = document.getElementById('detail-word-pronunciation');
+        const detailWordDescription = document.getElementById('detail-word-description');
+        const detailExamplesList = document.getElementById('detail-examples-list');
+        
+        wordCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const word = this.getAttribute('data-word');
+                const language = this.getAttribute('data-language');
+                const category = this.getAttribute('data-category');
+                
+                // Set word detail content
+                detailWordTitle.textContent = word;
+                
+                // Set pronunciation guide based on language
+                if (language === 'en') {
+                    // Example English pronunciation
+                    detailWordPronunciation.textContent = `Pronunciation: ${getPronunciation(word, language)}`;
+                    detailWordDescription.textContent = `The sign for "${word}" is formed by...`;
+                    
+                    // Example sentences
+                    detailExamplesList.innerHTML = getExampleSentences(word, language, category).map(example => 
+                        `<li class="list-group-item">${example}</li>`
+                    ).join('');
+                    
+                } else if (language === 'gu') {
+                    // Gujarati pronunciation
+                    detailWordPronunciation.textContent = `ઉચ્ચારણ: ${getPronunciation(word, language)}`;
+                    detailWordDescription.textContent = `"${word}" શબ્દ માટે સંકેત બનાવવામાં આવે છે...`;
+                    
+                    // Example sentences in Gujarati
+                    detailExamplesList.innerHTML = getExampleSentences(word, language, category).map(example => 
+                        `<li class="list-group-item">${example}</li>`
+                    ).join('');
+                    
+                } else if (language === 'hi') {
+                    // Hindi pronunciation
+                    detailWordPronunciation.textContent = `उच्चारण: ${getPronunciation(word, language)}`;
+                    detailWordDescription.textContent = `"${word}" शब्द के लिए संकेत बनाया जाता है...`;
+                    
+                    // Example sentences in Hindi
+                    detailExamplesList.innerHTML = getExampleSentences(word, language, category).map(example => 
+                        `<li class="list-group-item">${example}</li>`
+                    ).join('');
+                }
+                
+                // Show word detail
+                wordDetail.style.display = 'block';
+                
+                // Scroll to detail view
+                wordDetail.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        
+        // Close word detail
+        wordDetailClose.addEventListener('click', function() {
+            wordDetail.style.display = 'none';
+        });
+        
+        // Helper function to get pronunciation for a word
+        function getPronunciation(word, language) {
+            // This would ideally come from a database, but for demonstration purposes:
+            if (language === 'en') {
+                const pronunciations = {
+                    'Hello': 'hə-ˈlō',
+                    'Goodbye': 'ˌgu̇d-ˈbī',
+                    'Thank you': 'ˈthaŋk-yü',
+                    'Mother': 'ˈmə-t͟hər',
+                    'Father': 'ˈfä-t͟hər',
+                    'Water': 'ˈwȯ-tər',
+                    'Apple': 'ˈa-pəl',
+                    'Dog': 'ˈdȯg',
+                    'Cat': 'ˈkat',
+                    'Red': 'ˈred',
+                    'Blue': 'ˈblü',
+                    'Happy': 'ˈha-pē',
+                    'Sad': 'ˈsad'
+                };
+                return pronunciations[word] || word;
+            } else if (language === 'gu') {
+                // Gujarati pronunciations
+                const pronunciations = {
+                    'નમસ્તે': 'nuh-muh-s-tey',
+                    'આવજો': 'aav-jo',
+                    'માતા': 'maa-taa',
+                    'પિતા': 'pi-taa'
+                };
+                return pronunciations[word] || word;
+            } else if (language === 'hi') {
+                // Hindi pronunciations
+                const pronunciations = {
+                    'नमस्ते': 'nuh-muh-s-tey',
+                    'अलविदा': 'al-vee-daa',
+                    'माता': 'maa-taa',
+                    'पिता': 'pi-taa'
+                };
+                return pronunciations[word] || word;
+            }
+            return word;
+        }
+        
+        // Helper function to get example sentences for a word
+        function getExampleSentences(word, language, category) {
+            // This would ideally come from a database, but for demonstration:
+            if (language === 'en') {
+                const sentences = {
+                    'Hello': [
+                        'Hello, how are you today?',
+                        'I said hello to my teacher.'
+                    ],
+                    'Goodbye': [
+                        'I waved goodbye to my friends.',
+                        'She said goodbye and left for home.'
+                    ],
+                    'Thank you': [
+                        'Thank you for your help.',
+                        'I want to say thank you to everyone.'
+                    ],
+                    'Mother': [
+                        'My mother cooks delicious food.',
+                        'I love my mother very much.'
+                    ],
+                    'Father': [
+                        'My father teaches me mathematics.',
+                        'My father works in an office.'
+                    ],
+                    'Water': [
+                        'I drink water every day.',
+                        'Water is essential for life.'
+                    ],
+                    'Apple': [
+                        'I eat an apple every morning.',
+                        'The apple is red and sweet.'
+                    ],
+                    'Dog': [
+                        'The dog is playing in the garden.',
+                        'I have a friendly dog at home.'
+                    ],
+                    'Cat': [
+                        'The cat is sleeping on the sofa.',
+                        'My cat likes to chase mice.'
+                    ],
+                    'Red': [
+                        'The apple is red.',
+                        'I like the red dress.'
+                    ],
+                    'Blue': [
+                        'The sky is blue today.',
+                        'I have a blue pencil.'
+                    ],
+                    'Happy': [
+                        'I am happy to see you.',
+                        'The children look happy playing together.'
+                    ],
+                    'Sad': [
+                        'I feel sad when it rains.',
+                        'The movie had a sad ending.'
+                    ]
+                };
+                return sentences[word] || ['Example sentence with ' + word];
+            } else if (language === 'gu') {
+                // Gujarati example sentences
+                const sentences = {
+                    'નમસ્તે': [
+                        'નમસ્તે, આજે તમે કેમ છો?',
+                        'મેં મારા શિક્ષકને નમસ્તે કહ્યું.'
+                    ],
+                    'આવજો': [
+                        'મેં મારા મિત્રોને આવજો કહ્યું.',
+                        'તેણી આવજો કહીને ઘરે ગઈ.'
+                    ],
+                    'માતા': [
+                        'મારી માતા સ્વાદિષ્ટ ભોજન બનાવે છે.',
+                        'હું મારી માતાને ખૂબ પ્રેમ કરું છું.'
+                    ],
+                    'પિતા': [
+                        'મારા પિતા મને ગણિત શીખવે છે.',
+                        'મારા પિતા કાર્યાલયમાં કામ કરે છે.'
+                    ]
+                };
+                return sentences[word] || ['એક ઉદાહરણ વાક્ય ' + word + ' સાથે'];
+            } else if (language === 'hi') {
+                // Hindi example sentences
+                const sentences = {
+                    'नमस्ते': [
+                        'नमस्ते, आज आप कैसे हैं?',
+                        'मैंने अपने शिक्षक को नमस्ते कहा।'
+                    ],
+                    'अलविदा': [
+                        'मैंने अपने दोस्तों को अलविदा कहा।',
+                        'उसने अलविदा कहा और घर चली गई।'
+                    ],
+                    'माता': [
+                        'मेरी माता स्वादिष्ट भोजन बनाती हैं।',
+                        'मैं अपनी माता को बहुत प्यार करता हूँ।'
+                    ],
+                    'पिता': [
+                        'मेरे पिता मुझे गणित सिखाते हैं।',
+                        'मेरे पिता कार्यालय में काम करते हैं।'
+                    ]
+                };
+                return sentences[word] || ['एक उदाहरण वाक्य ' + word + ' के साथ'];
+            }
+            return ['Example sentence with ' + word];
+        }
+        
+        // Matching Game Implementation
+        const matchingCards = document.getElementById('matching-cards');
+        const newGameBtn = document.getElementById('new-game');
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+        let matchedPairs = 0;
+        
+        // Start a new matching game
+        function startNewGame() {
+            matchingCards.innerHTML = '';
+            matchedPairs = 0;
+            
+            // Get current language
+            const activeLanguage = document.querySelector('.language-tab.active').getAttribute('data-language');
+            let languageCode = activeLanguage;
+            
+            if (activeLanguage === 'current') {
+                languageCode = '{{ current_user.preferred_language if current_user.is_authenticated else session.get("language", "en") }}';
+            }
+            
+            // Get words from the active language
+            const wordCards = document.querySelectorAll(`.words-content[data-language="${languageCode}"] .word-card`);
+            const words = Array.from(wordCards).map(card => card.getAttribute('data-word'));
+            
+            // Shuffle and select 6 words for the game
+            const selectedWords = shuffleArray(words).slice(0, 6);
+            
+            // Create pairs (word + sign)
+            const pairs = [];
+            selectedWords.forEach(word => {
+                pairs.push({ type: 'word', content: word });
+                pairs.push({ type: 'sign', content: word });
+            });
+            
+            // Shuffle the pairs
+            const shuffledPairs = shuffleArray(pairs);
+            
+            // Create and add cards to the game
+            shuffledPairs.forEach((pair, index) => {
+                const card = document.createElement('div');
+                card.className = 'matching-card';
+                card.setAttribute('data-id', index);
+                card.setAttribute('data-word', pair.content);
+                
+                const cardFront = document.createElement('div');
+                cardFront.className = 'card-front';
+                cardFront.innerHTML = '<i class="fas fa-question"></i>';
+                
+                const cardBack = document.createElement('div');
+                cardBack.className = `card-back ${pair.type}`;
+                
+                if (pair.type === 'word') {
+                    cardBack.textContent = pair.content;
+                } else {
+                    cardBack.innerHTML = '<i class="fas fa-hands"></i>';
+                }
+                
+                card.appendChild(cardFront);
+                card.appendChild(cardBack);
+                
+                card.addEventListener('click', flipCard);
+                
+                matchingCards.appendChild(card);
+            });
+        }
+        
+        // Flip card when clicked
+        function flipCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+            
+            this.classList.add('flipped');
+            
+            if (!firstCard) {
+                // First card flipped
+                firstCard = this;
+                return;
+            }
+            
+            // Second card flipped
+            secondCard = this;
+            checkForMatch();
+        }
+        
+        // Check if the two flipped cards match
+        function checkForMatch() {
+            // Lock the board while checking
+            lockBoard = true;
+            
+            const firstWord = firstCard.getAttribute('data-word');
+            const secondWord = secondCard.getAttribute('data-word');
+            
+            // Do the cards match?
+            const isMatch = firstWord === secondWord;
+            
+            if (isMatch) {
+                // It's a match!
+                disableCards();
+                matchedPairs++;
+                
+                // Check if all pairs are matched
+                if (matchedPairs === 6) {
+                    setTimeout(() => {
+                        // Game complete!
+                        alert('Congratulations! You matched all the pairs!');
+                    }, 500);
+                }
+            } else {
+                // Not a match, flip cards back
+                unflipCards();
+            }
+        }
+        
+        // Disable matched cards
+        function disableCards() {
+            firstCard.removeEventListener('click', flipCard);
+            secondCard.removeEventListener('click', flipCard);
+            
+            resetBoard();
+        }
+        
+        // Unflip non-matching cards
+        function unflipCards() {
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                
+                resetBoard();
+            }, 1000);
+        }
+        
+        // Reset the board after a pair is checked
+        function resetBoard() {
+            [firstCard, secondCard] = [null, null];
+            lockBoard = false;
+        }
+        
+        // Shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            const result = [...array];
+            for (let i = result.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [result[i], result[j]] = [result[j], result[i]];
+            }
+            return result;
+        }
+        
+        // Initialize game on page load
+        startNewGame();
+        
+        // New game button
+        if (newGameBtn) {
+            newGameBtn.addEventListener('click', startNewGame);
+        }
+        
+        // Sentence Building Exercise
+        const sentenceBuilder = document.getElementById('sentence-builder');
+        const wordBank = document.getElementById('word-bank');
+        const targetSentence = document.getElementById('target-sentence');
+        const checkSentenceBtn = document.getElementById('check-sentence');
+        const newSentenceBtn = document.getElementById('new-sentence');
+        const sentenceFeedback = document.getElementById('sentence-feedback');
+        
+        // Sample sentences for practice
+        const practiceSentences = {
+            'en': [
+                'I am learning sign language.',
+                'My name is John.',
+                'I like to play with my dog.',
+                'The weather is nice today.',
+                'Please pass me the water.'
+            ],
+            'gu': [
+                'હું સાંકેતિક ભાષા શીખી રહ્યો છું.',
+                'મારું નામ જોન છે.',
+                'મને મારા કૂતરા સાથે રમવાનું ગમે છે.',
+                'આજે હવામાન સરસ છે.',
+                'કૃપા કરીને મને પાણી આપો.'
+            ],
+            'hi': [
+                'मैं सांकेतिक भाषा सीख रहा हूं।',
+                'मेरा नाम जॉन है।',
+                'मुझे अपने कुत्ते के साथ खेलना पसंद है।',
+                'आज मौसम अच्छा है।',
+                'कृपया मुझे पानी दें।'
+            ]
+        };
+        
+        // Start a new sentence building exercise
+        function startNewSentenceExercise() {
+            sentenceBuilder.innerHTML = '';
+            wordBank.innerHTML = '';
+            
+            // Get current language
+            const activeLanguage = document.querySelector('.language-tab.active').getAttribute('data-language');
+            let languageCode = activeLanguage;
+            
+            if (activeLanguage === 'current') {
+                languageCode = '{{ current_user.preferred_language if current_user.is_authenticated else session.get("language", "en") }}';
+            }
+            
+            // Select a random sentence from the array
+            const sentences = practiceSentences[languageCode] || practiceSentences['en'];
+            const randomSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            
+            // Set the target sentence
+            targetSentence.textContent = randomSentence;
+            
+            // Split sentence into words
+            const words = randomSentence.split(' ');
+            
+            // Shuffle words for the word bank
+            const shuffledWords = shuffleArray(words);
+            
+            // Create word elements
+            shuffledWords.forEach(word => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'sentence-word';
+                wordElement.textContent = word;
+                wordElement.draggable = true;
+                
+                // Add drag functionality
+                wordElement.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', word);
+                    this.style.opacity = '0.4';
+                });
+                
+                wordElement.addEventListener('dragend', function() {
+                    this.style.opacity = '1';
+                });
+                
+                wordBank.appendChild(wordElement);
+            });
+            
+            // Make sentence builder a drop target
+            sentenceBuilder.addEventListener('dragover', function(e) {
+                e.preventDefault();
+            });
+            
+            sentenceBuilder.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const word = e.dataTransfer.getData('text/plain');
+                
+                // Create a new element for the dropped word
+                const wordElement = document.createElement('div');
+                wordElement.className = 'sentence-word';
+                wordElement.textContent = word;
+                
+                // Make it draggable for repositioning
+                wordElement.draggable = true;
+                
+                wordElement.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', word);
+                    this.style.opacity = '0.4';
+                });
+                
+                wordElement.addEventListener('dragend', function() {
+                    this.style.opacity = '1';
+                });
+                
+                // Add double-click to remove
+                wordElement.addEventListener('dblclick', function() {
+                    this.remove();
+                });
+                
+                sentenceBuilder.appendChild(wordElement);
+                
+                // Find and remove the word from the word bank
+                const wordElements = wordBank.querySelectorAll('.sentence-word');
+                for (let i = 0; i < wordElements.length; i++) {
+                    if (wordElements[i].textContent === word) {
+                        wordElements[i].remove();
+                        break;
+                    }
+                }
+            });
+            
+            // Reset feedback
+            sentenceFeedback.style.display = 'none';
+        }
+        
+        // Check sentence button
+        if (checkSentenceBtn) {
+            checkSentenceBtn.addEventListener('click', function() {
+                const builtWords = Array.from(sentenceBuilder.querySelectorAll('.sentence-word')).map(el => el.textContent);
+                const builtSentence = builtWords.join(' ');
+                const targetText = targetSentence.textContent;
+                
+                if (builtSentence === targetText) {
+                    sentenceFeedback.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i> Correct! You built the sentence perfectly.
+                        </div>
+                    `;
+                } else {
+                    sentenceFeedback.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle"></i> Not quite right. Try again!
+                        </div>
+                    `;
+                }
+                
+                sentenceFeedback.style.display = 'block';
+            });
+        }
+        
+        // New sentence button
+        if (newSentenceBtn) {
+            newSentenceBtn.addEventListener('click', startNewSentenceExercise);
+        }
+        
+        // Initialize sentence exercise
+        startNewSentenceExercise();
+    });
+</script>
+{% endblock %}

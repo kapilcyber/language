@@ -1,0 +1,351 @@
+/* Dark Mode Styles for Tools */
+.dark-mode .drawing-container,
+.dark-mode .transcript-container,
+.dark-mode .sign-language-item,
+.dark-mode .recognition-result,
+.dark-mode .translation-panel,
+.dark-mode .translation-result,
+.dark-mode .sign-item,
+.dark-mode .template-body {
+    background-color: #2a2a3c;
+    border-color: #444;
+    color: #ffffff;
+}
+
+.dark-mode .sign-language-text {
+    color: #ffffff;
+}
+
+.dark-mode .sign-language-description,
+.dark-mode .text-muted {
+    color: #aaaaaa !important;
+}
+
+.dark-mode .drawing-canvas {
+    background-color: #fff;
+}
+
+.dark-mode #video-preview,
+.dark-mode #sign-video-preview {
+    background-color: #1a1a2e;
+}
+
+/* Writing Pad Styles */
+.drawing-container {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.drawing-canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    touch-action: none;
+    cursor: crosshair;
+    background-color: #fff;
+}
+
+.drawing-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.drawing-tool {
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.color-picker {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.color-option {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px #ddd;
+}
+
+.color-option.active {
+    box-shadow: 0 0 0 2px #007bff;
+    transform: scale(1.1);
+}
+
+.line-width {
+    width: 100%;
+    max-width: 200px;
+}
+
+/* Text to Sign Tool Styles */
+.sign-language-item {
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.sign-language-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.sign-language-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 150px;
+    margin-bottom: 15px;
+    object-fit: contain;
+}
+
+.sign-language-text {
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.sign-language-description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Speech to Sign Tool Styles */
+.microphone-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.microphone-button {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #dc3545;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.microphone-button:hover {
+    transform: scale(1.05);
+    background-color: #c82333;
+}
+
+.microphone-button:disabled {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}
+
+.microphone-button i {
+    font-size: 2rem;
+}
+
+.microphone-button.recording {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.transcript-container {
+    min-height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: #fff;
+}
+
+.sign-language-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .sign-language-container {
+        justify-content: flex-start;
+    }
+    
+    .sign-language-item {
+        flex: 0 0 calc(33.333% - 15px);
+        max-width: calc(33.333% - 15px);
+    }
+}
+
+/* HR Interview Tool Styles */
+.question-card {
+    margin-bottom: 20px;
+    border-left: 4px solid #4e73df;
+}
+
+.accommodation-card {
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.accommodation-card:hover {
+    transform: translateY(-5px);
+}
+
+.template-body {
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.85rem;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.tip-list li {
+    margin-bottom: 10px;
+}
+
+.inclusivity-score {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto;
+    font-weight: bold;
+}
+
+/* Sign to Text Tool Styles */
+.camera-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#video-preview, #sign-video-preview {
+    width: 100%;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+}
+
+.capture-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.video-container {
+    position: relative;
+}
+
+.recognition-result {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+}
+
+.captured-image {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+/* Real-time Translation Styles */
+.translation-container {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.translation-panel {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    height: 100%;
+}
+
+.translation-result {
+    min-height: 120px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #fff;
+}
+
+.record-btn {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.sign-visualization {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.sign-item {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    flex: 1 0 calc(33.333% - 15px);
+    max-width: calc(33.333% - 15px);
+    background-color: #fff;
+    text-align: center;
+}
+
+.sign-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.translation-history {
+    margin-top: 30px;
+}

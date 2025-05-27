@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ quiz.name }} - Inclusive Learning App{% endblock %}
+
+{% block content %}
+<div class="my-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('modules_by_category', category=quiz.lesson.module.category) }}">{{ quiz.lesson.module.category|title }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('module_detail', slug=quiz.lesson.module.slug) }}">{{ quiz.lesson.module.name }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('lesson_detail', module_slug=quiz.lesson.module.slug, lesson_slug=quiz.lesson.slug) }}">{{ quiz.lesson.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Quiz</li>
+        </ol>
+    </nav>
+    
+    <div class="quiz-header mb-4">
+        <h1>{{ quiz.name }}</h1>
+        <p class="lead">{{ quiz.description }}</p>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="quiz-progress mb-4">
+                <div class="progress">
+                    <div class="progress-bar" id="quiz-progress-bar" role="progressbar" style="width: 0%;" 
+                         aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                <div class="d-flex justify-content-between mt-1">
+                    <span>Question <span id="current-question">1</span> of {{ questions|length }}</span>
+                    <span id="timer">00:00</span>
+                </div>
+            </div>
+            
+            <form id="quiz-form" action="{{ url_for('submit_quiz', quiz_id=quiz.id) }}" method="post">
+                {% for question in questions %}
+                    <div class="question-container" id="question-{{ loop.index }}" {% if not loop.first %}style="display: none;"{% endif %}>
+                        <div class="question-number mb-2">Question {{ loop.index }}</div>
+                        <h3 class="question-text mb-3">{{ question.question_text }}</h3>
+                        
+                        {% if question.question_type == 'multiple-choice' %}
+                            <div class="choices-container">
+                                {% for choice in question.choices_list %}
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                               id="choice_{{ choice.id }}" value="{{ choice.id }}" 
+                                               data-question-index="{{ loop.parent.loop.index }}">
+                                        <label class="form-check-label" for="choice_{{ choice.id }}">
+                                            {{ choice.choice_text }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% elif question.question_type == 'true-false' %}
+                            <div class="choices-container">
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                           id="choice_{{ question.id }}_true" value="True" 
+                                           data-question-index="{{ loop.index }}">
+                                    <label class="form-check-label" for="choice_{{ question.id }}_true">
+                                        True
+                                    </label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="question_{{ question.id }}" 
+                                           id="choice_{{ question.id }}_false" value="False" 
+                                           data-question-index="{{ loop.index }}">
+                                    <label class="form-check-label" for="choice_{{ question.id }}_false">
+                                        False
+                                    </label>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        <div id="feedback-{{ question.id }}" class="feedback mt-3" style="display: none;"></div>
+                    </div>
+                {% endfor %}
+                
+                <div class="quiz-navigation mt-4">
+                    <div class="row">
+                        <div class="col-6">
+                            <button type="button" id="prev-question" class="btn btn-outline-primary" disabled>
+                                <i class="fas fa-arrow-left me-1"></i> Previous
+                            </button>
+                        </div>
+                        <div class="col-6 text-end">
+                            <button type="button" id="next-question" class="btn btn-primary">
+                                Next <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                            <button type="button" id="submit-quiz" class="btn btn-success" style="display: none;">
+                                <i class="fas fa-check me-1"></i> Submit Quiz
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Submission Confirmation Modal -->
+<div class="modal fade" id="submitConfirmModal" tabindex="-1" aria-labelledby="submitConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="submitConfirmModalLabel">Submit Quiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to submit your quiz?</p>
+                <div id="unanswered-warning" class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-1"></i> You have <span id="unanswered-count">0</span> unanswered questions.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirm-submit" class="btn btn-primary">Yes, Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/quiz.js') }}"></script>
+<script>
+    // Initialize quiz with total number of questions
+    document.addEventListener('DOMContentLoaded', function() {
+        initQuiz({{ questions|length }});
+    });
+</script>
+{% endblock %}
